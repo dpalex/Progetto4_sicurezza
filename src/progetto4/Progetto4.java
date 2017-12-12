@@ -5,10 +5,12 @@
  */
 package progetto4;
 
+import static java.awt.PageAttributes.MediaType.B;
 import static java.lang.System.out;
 import java.math.BigInteger;
 import java.security.Key;
 import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.Map;
 import java.util.TreeMap;
 import javafx.util.Pair;
@@ -24,22 +26,30 @@ public class Progetto4 {
      */
     public static void main(String[] args) {
       
-      SecureRandom r =  new SecureRandom();
-      byte[] secret = new byte[4];
+     SecureRandom r =  new SecureRandom();
+      byte[] secret =new byte[4]; // Base64.getDecoder().decode("ePplFQ==");
       r.nextBytes(secret);
-      SecretSharing s = new SecretSharing(2,3); //k=2 e n=3
-      
+      SecretSharing s = new SecretSharing(5,15); //k=2 e n=3
+      System.out.println("chiave base64 -> "+Base64.getEncoder().encodeToString(secret));
       Map<BigInteger,byte[]> mapN = s.split(secret);
       
-      out.println("\n********** RISULTATO **********\n");
+      byte[] secretr = s.getSecret(mapN);
+      BigInteger s2 = new BigInteger(secretr);
+      out.println("Segreto ricostruito : "+s2);
+      System.out.println("chiave  base64 -> "+Base64.getEncoder().encodeToString(secretr));
       
-      for(BigInteger k : mapN.keySet()){
-          System.out.println(mapN.get(k));
-          System.out.println(new BigInteger((byte[]) mapN.get(k)));
-          System.out.println(new BigInteger((byte[]) mapN.get(k)).bitCount());
-      }
       
+     
+      
+    
+     
+    
       }
+
+   
+    
+    
+     
       
     
     }

@@ -5,12 +5,17 @@
  */
 package progetto4;
 
+import static java.lang.System.out;
 import java.math.BigInteger;
-import java.util.Random;
+import java.security.Key;
+import java.security.SecureRandom;
+import java.util.Map;
+import java.util.TreeMap;
+import javafx.util.Pair;
 
 /**
  *
- * @author dp.alex
+ * @author gia
  */
 public class Progetto4 {
 
@@ -18,47 +23,25 @@ public class Progetto4 {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
-        BigInteger b = new BigInteger("4");
-        System.out.println(b);
-        System.out.println(BigInteger.probablePrime(8, new Random()));
-        System.out.println(BigInteger.probablePrime(8, new Random()));
-        System.out.println(BigInteger.probablePrime(8, new Random()));
-        System.out.println(BigInteger.probablePrime(8, new Random()));
-        System.out.println("genPrime");
-        System.out.println(genPrime());
-        System.out.println(genPrime());
-        System.out.println(genPrime());
-        randomZp();
-        randomZp();
-        randomZp();
-
+      
+      SecureRandom r =  new SecureRandom();
+      byte[] secret = new byte[4];
+      r.nextBytes(secret);
+      SecretSharing s = new SecretSharing(2,3); //k=2 e n=3
+      
+      Map<BigInteger,byte[]> mapN = s.split(secret);
+      
+      out.println("\n********** RISULTATO **********\n");
+      
+      for(BigInteger k : mapN.keySet()){
+          System.out.println(mapN.get(k));
+          System.out.println(new BigInteger((byte[]) mapN.get(k)));
+          System.out.println(new BigInteger((byte[]) mapN.get(k)).bitCount());
+      }
+      
+      }
+      
+    
     }
+    
 
-    private static BigInteger genPrime() {
-        BigInteger p = null;
-        boolean ok = false;
-        int modLength = 8;
-        int CERTAINTY = 50;
-        do {
-            p = BigInteger.probablePrime(modLength, new Random());
-            if (p.isProbablePrime(CERTAINTY)) {
-                ok = true;
-            }
-        } while (ok == false);
-        return p;
-    }
-
-    private static void randomZp() {
-        BigInteger r;
-        int modLength = 8;
-        BigInteger p = genPrime();
-        do {
-            r = new BigInteger(modLength, new Random());
-           
-        } while (r.compareTo(BigInteger.ZERO) < 0 || r.compareTo(p) >= 0);
-        
-        System.out.println("numero casuale:"+r+"  in Z:"+p);
-    }
-
-}

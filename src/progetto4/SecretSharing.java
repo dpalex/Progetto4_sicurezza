@@ -41,15 +41,15 @@ public class SecretSharing {
      //   out.println("Secret -> " + S);
       //  out.println("Secret ricevuto -> " + S2);
 
-        BigInteger prime = null;
-        boolean condition = true;
+        BigInteger prime = new BigInteger("277");
+      /*  boolean condition = true;
         while (condition) { //genero prime maggiore di n e di S ????
 
             prime = this.genPrime();
             condition = prime.compareTo(new BigInteger(String.valueOf(this.n))) != 1;
             condition = condition || prime.compareTo(S) != 1;
 
-        }
+        }*/
     //    out.println("Prime -> " + prime);
         this.primeN = prime;
 

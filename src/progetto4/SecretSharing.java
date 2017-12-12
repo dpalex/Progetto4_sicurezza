@@ -22,7 +22,7 @@ public class SecretSharing {
     private int k;
     private int n;
     private int CERTAINTY = 50;
-    private int modLength = 32;
+    private int modLength = 8;
     private BigInteger primeN;
 
     public SecretSharing(int k, int n) {
@@ -30,7 +30,7 @@ public class SecretSharing {
         this.k = k;
         this.n = n;
 
-        out.println("K -> " + k + " N - > " + n);
+       // out.println("K -> " + k + " N - > " + n);
     }
 
     public Map<BigInteger, byte[]> split(byte[] secret) {
@@ -38,8 +38,8 @@ public class SecretSharing {
         Map<BigInteger, byte[]> mapN = new TreeMap<BigInteger, byte[]>();
         BigInteger S = new BigInteger(1,secret); //rappresentazione di S
         BigInteger S2 = new BigInteger(secret); //rappresentazione di S
-        out.println("Secret -> " + S);
-        out.println("Secret ricevuto -> " + S2);
+     //   out.println("Secret -> " + S);
+      //  out.println("Secret ricevuto -> " + S2);
 
         BigInteger prime = null;
         boolean condition = true;
@@ -50,7 +50,7 @@ public class SecretSharing {
             condition = condition || prime.compareTo(S) != 1;
 
         }
-        out.println("Prime -> " + prime);
+    //    out.println("Prime -> " + prime);
         this.primeN = prime;
 
         ArrayList<BigInteger> a = new ArrayList<BigInteger>();
@@ -59,9 +59,9 @@ public class SecretSharing {
             a.add(this.randomZp(prime));
         }
 
-        out.println("numero dei coefficienti : " + a.size());
+     //   out.println("numero dei coefficienti : " + a.size());
         for (BigInteger ax : a) {
-            out.println("coefficiente : " + ax);
+     //       out.println("coefficiente : " + ax);
         }
 
         ArrayList<BigInteger> rPolynomial = this.makeRP(a, S, prime);
@@ -81,7 +81,7 @@ public class SecretSharing {
 
         for (int i = 1; i < this.n + 1; i++) {  //indice del polinomio f(i)
 
-            BigInteger tmp = S;
+            BigInteger tmp = S.mod(prime);
             BigInteger x = BigInteger.valueOf(i); //sostituisco x con i
         //    out.println("partecipante ->  " + i);
             
@@ -145,7 +145,7 @@ public class SecretSharing {
                 
             }
             secret = secret.mod(this.primeN);
-            return secret.toByteArray();
+            return this.checkPositive(secret);
             
         }
          
@@ -173,5 +173,20 @@ public class SecretSharing {
         } while (r.compareTo(BigInteger.ZERO) < 0 || r.compareTo(p) >= 0);
         return r;
     }
+    
+    private byte[] checkPositive(BigInteger x){
+        
+        String soglia ="127";
+        
+        if(x.compareTo(new BigInteger(soglia)) == 1){
+            x = x.add(new BigInteger("-128"));
+            x = x.add(new BigInteger("-128"));
+        }
+        
+        return x.toByteArray();
+    }
+    
+    
+        
 
 }

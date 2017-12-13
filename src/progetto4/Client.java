@@ -26,7 +26,7 @@ import progetto4.SecretSharing;
  */
 public class Client {
 
-    private HashMap<String, HashMap<String, String>> nameMapping = new HashMap<String, HashMap<String, String>>();
+    private HashMap<String, HashMap<BigInteger, String>> nameMapping = new HashMap<String, HashMap<BigInteger, String>>();
     private HashMap<String, byte[]> macMapping = new HashMap<String, byte[]>();
     ;
     private String id;
@@ -49,10 +49,10 @@ public class Client {
         Map<BigInteger, byte[]> shares = this.shamirScheme.split(file);
         this.nameMapping.put(name, this.distribuite(shares));
 
-        for (Map.Entry<String, HashMap<String, String>> s : this.nameMapping.entrySet()) {
+        for (Map.Entry<String, HashMap<BigInteger, String>> s : this.nameMapping.entrySet()) {
             System.out.println("File: " + s.getKey());
             System.out.println("mac del file: " + Base64.getEncoder().encodeToString(macMapping.get(name)));
-            for (Map.Entry<String, String> s1 : s.getValue().entrySet()) {
+            for (Map.Entry<BigInteger, String> s1 : s.getValue().entrySet()) {
                 System.out.println("Server: " + s1.getKey());
                 System.out.println("nome parte: " + s1.getValue());
             }
@@ -60,8 +60,8 @@ public class Client {
 
     }
 
-    private HashMap<String, String> distribuite(Map<BigInteger, byte[]> shares) throws IOException {
-        HashMap<String, String> tmp = new HashMap<String, String>();
+    private HashMap<BigInteger, String> distribuite(Map<BigInteger, byte[]> shares) throws IOException {
+        HashMap<BigInteger, String> tmp = new HashMap<BigInteger, String>();
         for (Map.Entry<BigInteger, byte[]> s : shares.entrySet()) {
             Path path = Paths.get("src/progetto4/Servers/" + s.getKey().toString());
             File folder = new File(path.toString());
@@ -77,7 +77,7 @@ public class Client {
                 f = new File(path + "/" + fileName);
             }
             Utility.writeFile(path + "/" + fileName, s.getValue());
-            tmp.put(s.getKey().toString(), fileName);
+            tmp.put(s.getKey(), fileName);
 
         }
         return tmp;
@@ -88,6 +88,15 @@ public class Client {
         return Arrays.equals(this.macMapping.get(name), Utility.genMac(downloaded));
     }
     
+    public byte[] download(String name) throws IOException{
+        Map<BigInteger,byte[]> fileMap=new HashMap<BigInteger,byte[]>() {};
+        
+        for (Map.Entry<BigInteger, String> s : this.nameMapping.get(name).entrySet()) {
+             Path path = Paths.get("src/progetto4/Servers/" + s.getKey().toString());
+             fileMap.put(s.getKey(),Utility.loadFile(path.toString()+"/"+s.getValue()));
+        }
+        return this.shamirScheme.getSecret(fileMap);
+    }
     
     
 

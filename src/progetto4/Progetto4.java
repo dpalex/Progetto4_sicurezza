@@ -72,11 +72,11 @@ public class Progetto4 {
     //  System.out.println("Secret  base64 -> "+Base64.getEncoder().encodeToString(secretr)); */
       
       Client gio=new Client("giovanni");
-      gio.setShamirScheme(3, 15);
+      gio.setShamirScheme(3, 5);
       gio.upload("shamir.pdf");
       
-
-         
+      byte[] down=gio.download("shamir.pdf");
+      System.out.println("ricevuto: "+Base64.getEncoder().encodeToString(down));
           
       }
       

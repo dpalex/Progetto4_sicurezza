@@ -44,11 +44,18 @@ public class Client {
     public void upload(String name) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         Path currentRelativePath = Paths.get("src/progetto4");
         String path = currentRelativePath.toAbsolutePath().toString() + "/Repo/";
-        byte[] file = Arrays.copyOfRange(Utility.loadFile(path + name), 0, 1);
-        this.macMapping.put(name, Utility.genMac(file));
-        Map<BigInteger, byte[]> shares = this.shamirScheme.split(file);
-        this.nameMapping.put(name, this.distribuite(shares));
+        byte[] file = Arrays.copyOfRange(Utility.loadFile(path + name), 10, 11);
+        System.out.println("inviato: "+Base64.getEncoder().encodeToString(file));
 
+        this.macMapping.put(name, Utility.genMac(file));
+        System.out.print("Split ricevuto da shamir");
+        Map<BigInteger, byte[]> shares = this.shamirScheme.split(file);
+         for (Map.Entry<BigInteger,byte[]> s : shares.entrySet()) {
+             System.out.println("Server: " + s.getKey());
+             System.out.println("file: " + Base64.getEncoder().encodeToString(s.getValue()));
+    }
+        this.nameMapping.put(name, this.distribuite(shares));
+/*
         for (Map.Entry<String, HashMap<BigInteger, String>> s : this.nameMapping.entrySet()) {
             System.out.println("File: " + s.getKey());
             System.out.println("mac del file: " + Base64.getEncoder().encodeToString(macMapping.get(name)));
@@ -56,7 +63,7 @@ public class Client {
                 System.out.println("Server: " + s1.getKey());
                 System.out.println("nome parte: " + s1.getValue());
             }
-        }
+        }*/
 
     }
 
@@ -94,7 +101,14 @@ public class Client {
         for (Map.Entry<BigInteger, String> s : this.nameMapping.get(name).entrySet()) {
              Path path = Paths.get("src/progetto4/Servers/" + s.getKey().toString());
              fileMap.put(s.getKey(),Utility.loadFile(path.toString()+"/"+s.getValue()));
+             
         }
+        System.out.print("Split inviato a shamir");
+       
+         for (Map.Entry<BigInteger,byte[]> s : fileMap.entrySet()) {
+             System.out.println("Server: " + s.getKey());
+             System.out.println("file: " + Base64.getEncoder().encodeToString(s.getValue()));
+    }
         return this.shamirScheme.getSecret(fileMap);
     }
     

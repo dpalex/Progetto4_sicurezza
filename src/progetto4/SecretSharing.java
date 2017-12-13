@@ -33,7 +33,7 @@ public class SecretSharing {
        // out.println("K -> " + k + " N - > " + n);
     }
 
-    public Map<BigInteger, byte[]> split(byte[] secret) {
+    public static Map<BigInteger, byte[]> split(byte[] secret) {
 
         Map<BigInteger, byte[]> mapN = new TreeMap<BigInteger, byte[]>();
         BigInteger S = new BigInteger(1,secret); //rappresentazione di S
@@ -100,7 +100,7 @@ public class SecretSharing {
         return RP;
     }
     
-    public byte[] getSecret(Map<BigInteger, byte[]> Kp){
+    public static byte[] getSecret(Map<BigInteger, byte[]> Kp){
         
         if(Kp.size()>=this.k){
             

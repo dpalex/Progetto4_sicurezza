@@ -27,7 +27,7 @@ import progetto4.SecretSharing;
 public class Client {
 
     private HashMap<String, HashMap<BigInteger, String>> nameMapping = new HashMap<String, HashMap<BigInteger, String>>();
-    private HashMap<String, byte[]> macMapping = new HashMap<String, byte[]>();
+    private HashMap<String, String> macMapping = new HashMap<String, String>();
     ;
     private String id;
     private SecretSharing shamirScheme;
@@ -47,7 +47,7 @@ public class Client {
         byte[] file = Arrays.copyOfRange(Utility.loadFile(path + name), 10, 11);
         System.out.println("inviato: "+Base64.getEncoder().encodeToString(file));
 
-        this.macMapping.put(name, Utility.genMac(file));
+        this.macMapping.put(name, Base64.getEncoder().encodeToString(Utility.genMac(file)));
         System.out.print("Split ricevuto da shamir");
         Map<BigInteger, byte[]> shares = this.shamirScheme.split(file);
          for (Map.Entry<BigInteger,byte[]> s : shares.entrySet()) {
@@ -92,7 +92,10 @@ public class Client {
     }
 
     public boolean checkMac(String name, byte[] downloaded) throws NoSuchAlgorithmException, InvalidKeyException {
-        return Arrays.equals(this.macMapping.get(name), Utility.genMac(downloaded));
+        System.out.println("mac salvato prima dell'invio: "+this.macMapping.get(name));
+        System.out.println("mac ricevuto: "+Base64.getEncoder().encodeToString(Utility.genMac(downloaded)));
+        
+        return this.macMapping.get(name).equals(Base64.getEncoder().encodeToString(Utility.genMac(downloaded)));
     }
     
     public byte[] download(String name) throws IOException{

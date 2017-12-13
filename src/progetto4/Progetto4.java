@@ -76,7 +76,13 @@ public class Progetto4 {
       gio.upload("shamir.pdf");
       
       byte[] down=gio.download("shamir.pdf");
+       Path currentRelativePath = Paths.get("src/progetto4");
+        String path = currentRelativePath.toAbsolutePath().toString() + "/Repo/";
+       byte[] file1 = Arrays.copyOfRange(Utility.loadFile(path + "shamir.pdf"), 10, 11);
+       System.out.println(Arrays.equals(down,file1));
+
       System.out.println("ricevuto: "+Base64.getEncoder().encodeToString(down));
+       System.out.println(gio.checkMac("shamir.pdf", down));
           
       }
       

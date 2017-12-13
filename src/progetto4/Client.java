@@ -49,7 +49,7 @@ public class Client {
             String fileName = UUID.randomUUID().toString()+".parts";
             File f=new File(path+"/"+fileName);
             while(f.exists()){
-                Utility.printDebug(f.exists(), "file già esistente", debug);
+                Utility.printDebug(f.exists(), "file [ "+fileName+" ] già esistente", debug);
                 fileName = UUID.randomUUID().toString()+".parts";
                 f=new File(path+"/"+fileName);
             }

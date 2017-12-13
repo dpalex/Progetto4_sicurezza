@@ -11,6 +11,10 @@ import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -22,11 +26,13 @@ import progetto4.SecretSharing;
  */
 public class Client {
 
-    private Map<String, Map<String, String>> nameMapping;
+    private HashMap<String, HashMap<String, String>> nameMapping = new HashMap<String, HashMap<String, String>>();
+    private HashMap<String, byte[]> macMapping = new HashMap<String, byte[]>();
+    ;
     private String id;
     private SecretSharing shamirScheme;
-    private boolean debug =true;
-    
+    private boolean debug = false;
+
     public Client(String id) {
         this.id = id;
     }
@@ -35,29 +41,54 @@ public class Client {
         this.shamirScheme = new SecretSharing(k, n);
     }
 
-    public void upload(String name) throws IOException {
+    public void upload(String name) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         Path currentRelativePath = Paths.get("src/progetto4");
         String path = currentRelativePath.toAbsolutePath().toString() + "/Repo/";
-        this.nameMapping.put(name,this.distribuite(this.shamirScheme.split(Utility.loadFile(path + name))));
+        byte[] file = Arrays.copyOfRange(Utility.loadFile(path + name), 0, 1);
+        this.macMapping.put(name, Utility.genMac(file));
+        Map<BigInteger, byte[]> shares = this.shamirScheme.split(file);
+        this.nameMapping.put(name, this.distribuite(shares));
+
+        for (Map.Entry<String, HashMap<String, String>> s : this.nameMapping.entrySet()) {
+            System.out.println("File: " + s.getKey());
+            System.out.println("mac del file: " + Base64.getEncoder().encodeToString(macMapping.get(name)));
+            for (Map.Entry<String, String> s1 : s.getValue().entrySet()) {
+                System.out.println("Server: " + s1.getKey());
+                System.out.println("nome parte: " + s1.getValue());
+            }
+        }
+
     }
 
-    private Map<String, String> distribuite(Map<BigInteger, byte[]> shares) throws IOException {
-        Map<String, String> tmp=new HashMap<String,String>();
+    private HashMap<String, String> distribuite(Map<BigInteger, byte[]> shares) throws IOException {
+        HashMap<String, String> tmp = new HashMap<String, String>();
         for (Map.Entry<BigInteger, byte[]> s : shares.entrySet()) {
             Path path = Paths.get("src/progetto4/Servers/" + s.getKey().toString());
-            Files.createDirectory(path);
-            String fileName = UUID.randomUUID().toString()+".parts";
-            File f=new File(path+"/"+fileName);
-            while(f.exists()){
-                Utility.printDebug(f.exists(), "file [ "+fileName+" ] già esistente", debug);
-                fileName = UUID.randomUUID().toString()+".parts";
-                f=new File(path+"/"+fileName);
+            File folder = new File(path.toString());
+            Utility.printDebug(folder.exists(), "Cartella :" + s.getKey().toString() + " già esistente", debug);
+            if (!folder.exists()) {
+                Files.createDirectory(path);
             }
-            Utility.writeFile(path+"/"+fileName, s.getValue());
-            tmp.put(s.getKey().toString(),fileName);
-            
+            String fileName = UUID.randomUUID().toString() + ".parts";
+            File f = new File(path + "/" + fileName);
+            while (f.exists()) {
+                Utility.printDebug(!f.exists(), "file [ " + fileName + " ] già esistente", debug);
+                fileName = UUID.randomUUID().toString() + ".parts";
+                f = new File(path + "/" + fileName);
+            }
+            Utility.writeFile(path + "/" + fileName, s.getValue());
+            tmp.put(s.getKey().toString(), fileName);
+
         }
         return tmp;
+
     }
+
+    public boolean checkMac(String name, byte[] downloaded) throws NoSuchAlgorithmException, InvalidKeyException {
+        return Arrays.equals(this.macMapping.get(name), Utility.genMac(downloaded));
+    }
+    
+    
+    
 
 }

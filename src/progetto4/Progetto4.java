@@ -13,10 +13,13 @@ import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.InvalidKeyException;
 import java.security.Key;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
@@ -31,7 +34,7 @@ public class Progetto4 {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         
       /*
       byte[] file = Utility.loadFile("/Users/f.did/Desktop/8971_eightbit.jpg");
@@ -69,8 +72,12 @@ public class Progetto4 {
     //  System.out.println("Secret  base64 -> "+Base64.getEncoder().encodeToString(secretr)); */
       
       Client gio=new Client("giovanni");
-      gio.setShamirScheme(3, 5);
+      gio.setShamirScheme(3, 15);
       gio.upload("shamir.pdf");
+      
+
+         
+          
       }
       
       }

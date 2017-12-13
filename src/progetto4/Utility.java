@@ -231,4 +231,12 @@ public class Utility implements Serializable {
 
     }
 
+    public static void printDebug(boolean condition, String message, boolean debug) {
+        if (debug) {
+            if (!condition) {
+                System.out.println(message);
+            }
+        }
+    }
+
 }

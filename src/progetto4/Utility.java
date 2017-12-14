@@ -35,6 +35,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 import java.util.TimeZone;
+import java.util.zip.DataFormatException;
+import java.util.zip.Deflater;
+import java.util.zip.Inflater;
 import javax.crypto.KeyGenerator;
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
@@ -189,6 +192,56 @@ public class Utility implements Serializable {
                 System.out.println(message);
             }
         }
+    }
+    
+    public static byte[] compress(byte[] data ) throws IOException{
+         Deflater compressor = new Deflater(Deflater.BEST_COMPRESSION);
+        compressor.setInput(data);
+        compressor.finish();
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(data.length);
+
+        // Compress the data
+        byte[] buf = new byte[1024];
+        while (!compressor.finished()) {
+            int count = compressor.deflate(buf);
+            bos.write(buf, 0, count);
+        }
+        try {
+            bos.close();
+        } catch (IOException e) {
+        }
+
+        // Get the compressed data
+        byte[] compressedData = bos.toByteArray();
+        bos.close();
+        return compressedData;
+    }
+    
+    public static byte[] decompress(byte[] data) throws IOException{
+         Inflater decompressor = new Inflater();
+        decompressor.setInput(data);
+
+        // Create an expandable byte array to hold the decompressed data
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(data.length);
+
+        // Decompress the data
+        byte[] buf = new byte[1024];
+        while (!decompressor.finished()) {
+            try {
+                int count = decompressor.inflate(buf);
+                bos.write(buf, 0, count);
+            } catch (DataFormatException e) {
+            }
+        }
+        try {
+            bos.close();
+        } catch (IOException e) {
+        }
+
+        // Get the decompressed data
+        byte[] decompressedData = bos.toByteArray();
+        bos.close();
+        return decompressedData;
     }
 
 }

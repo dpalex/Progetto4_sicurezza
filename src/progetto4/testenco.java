@@ -14,7 +14,10 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.zip.DataFormatException;
+import java.util.zip.Deflater;
 import java.util.zip.GZIPOutputStream;
+import java.util.zip.Inflater;
 
 /**
  *
@@ -25,10 +28,10 @@ public class testenco {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws IOException {
-       byte[] data = Utility.loadFile("/Users/f.did/Desktop/JPEG_20160830_195147_115183616.jpg");
-       out.println(data.length);
-       SecretSharing sh = new SecretSharing(2,3,64);
+    public static void main(String[] args) throws IOException, DataFormatException {
+
+        byte[] data = Utility.loadFile("/Users/f.did/Desktop/JPEG_20160830_195147_115183616.jpg");
+        /*  SecretSharing sh = new SecretSharing(2,3,256);
         
        Map<BigInteger, ArrayList<byte[]>> shareMap = sh.split(data);
        for(BigInteger k :shareMap.keySet()){
@@ -37,41 +40,15 @@ public class testenco {
          
         byte [] file = sh.getSecret(shareMap);
          
-        Utility.writeFile("/Users/f.did/Desktop/prova2.jpg", file);
+        Utility.writeFile("/Users/f.did/Desktop/prova2.jpg", file); */
+
+       
+
+        // Create the decompressor and give it the data to compress
+       byte[] dc = 
         
-        /*
-        byte[] arrayencS = Base64.getEncoder().encode(data);
-        
-        
-        byte[] dataZ = Zipper.Zip(data);
-         byte[] arrayencSZ = Base64.getEncoder().encode(dataZ);
-        out.println("dimensione data  : " + (data.length));
-        out.println("dimensione data base 64 : " + (arrayencS.length));
-        out.println("dimensione encB64 - data  : " + (arrayencS.length - data.length));
-        out.println("dimensione data Zip : " + (dataZ.length));
-        out.println("dimensione data Zip base 64 : " + (arrayencSZ.length));
-        out.println("dimensione encB64Z - dataZ  : " + (arrayencSZ.length - dataZ.length));
-
-        for (int i = 0; i < arrayencS.length / 3; i += 3) {
-
-            byte[] a = Arrays.copyOfRange(arrayencS, i, i + 4);
-            BigInteger ba = new BigInteger(a);
-
-            if (ba.signum() == -1) {
-                out.println("Negativo");
-
-            }
-
-            if (ba.compareTo(new BigInteger("2147483647")) == 1) {
-                out.println("MAggiore di 2147483647");
-                out.println(ba);
-
-            }
-
-        }*/
+        out.println(Arrays.equals(compressedData,decompressedData));
 
     }
-
-    
 
 }

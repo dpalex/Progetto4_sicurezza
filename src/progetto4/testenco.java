@@ -26,7 +26,7 @@ public class testenco {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws IOException {
-       byte[] data = Utility.loadFile("/Users/f.did/Desktop/prova1.rtf");
+       byte[] data = Utility.loadFile("/Users/f.did/Desktop/JPEG_20160830_195147_115183616.jpg");
        out.println(data.length);
        SecretSharing sh = new SecretSharing(2,3);
         
@@ -36,10 +36,8 @@ public class testenco {
        }
          
         byte [] file = sh.getSecret(shareMap);
-        
-        out.println(new String(file));
          
-        Utility.writeFile("/Users/f.did/Desktop/prova2.rtf", file);
+        Utility.writeFile("/Users/f.did/Desktop/prova2.jpg", file);
         
         /*
         byte[] arrayencS = Base64.getEncoder().encode(data);

@@ -34,23 +34,6 @@ public class SecretSharing {
         this.k = k;
         this.n = n;
 
-<<<<<<< HEAD
-=======
-       // out.println("K -> " + k + " N - > " + n);
-    }
-
-    public  Map<BigInteger, byte[]> split(byte[] secret) {
-
-        Map<BigInteger, byte[]> mapN = new TreeMap<BigInteger, byte[]>();
-        BigInteger S = new BigInteger(1,secret); //rappresentazione di S
-        BigInteger S2 = new BigInteger(secret); //rappresentazione di S
-     //   out.println("Secret -> " + S);
-      //  out.println("Secret ricevuto -> " + S2);
-
-        BigInteger prime = new BigInteger("277");
-      /*  boolean condition = true;
-        while (condition) { //genero prime maggiore di n e di S ????
->>>>>>> c928e697f12f658c957a25ee54abb076cde97e57
 
         BigInteger prime = this.genPrime();
         BigInteger two = new BigInteger("2");
@@ -154,7 +137,6 @@ public class SecretSharing {
         }
         return RP;
     }
-<<<<<<< HEAD
 
 
     public byte[] getSecret(Map<BigInteger, ArrayList<byte[]> > Kp) throws IOException {
@@ -165,12 +147,6 @@ public class SecretSharing {
         byte[] secretFinal = null;
 
         if (Kp.size() >= this.k) {
-=======
-    
-    public  byte[] getSecret(Map<BigInteger, byte[]> Kp){
-        
-        if(Kp.size()>=this.k){
->>>>>>> c928e697f12f658c957a25ee54abb076cde97e57
             
 
             List<BigInteger> idList = new ArrayList<BigInteger>(Kp.keySet()); // set degli ID

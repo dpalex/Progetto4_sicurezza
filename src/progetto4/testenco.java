@@ -31,7 +31,7 @@ public class testenco {
     public static void main(String[] args) throws IOException, DataFormatException {
 
         byte[] data = Utility.loadFile("/Users/f.did/Desktop/JPEG_20160830_195147_115183616.jpg");
-        /*  SecretSharing sh = new SecretSharing(2,3,256);
+          SecretSharing sh = new SecretSharing(2,3,256);
         
        Map<BigInteger, ArrayList<byte[]>> shareMap = sh.split(data);
        for(BigInteger k :shareMap.keySet()){
@@ -40,14 +40,18 @@ public class testenco {
          
         byte [] file = sh.getSecret(shareMap);
          
-        Utility.writeFile("/Users/f.did/Desktop/prova2.jpg", file); */
+        Utility.writeFile("/Users/f.did/Desktop/prova2.jpg", file); 
+
+
+        
+          /*byte[] dc = Utility.compress(data);
+          byte[] d = Utility.decompress(dc);
+      //    Utility.writeFile("/Users/f.did/Desktop/prova2.jpg", d); 
+       
+               out.println(Arrays.equals(d,dc));
+               out.println(d.equals(dc));*/
 
        
-
-        // Create the decompressor and give it the data to compress
-       byte[] dc = 
-        
-        out.println(Arrays.equals(compressedData,decompressedData));
 
     }
 

@@ -16,7 +16,9 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Serializable;
+import static java.lang.System.out;
 import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -37,6 +39,7 @@ import java.util.Scanner;
 import java.util.TimeZone;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
+import java.util.zip.GZIPOutputStream;
 import java.util.zip.Inflater;
 import javax.crypto.KeyGenerator;
 import javax.crypto.Mac;
@@ -58,11 +61,11 @@ public class Utility implements Serializable {
         byte[] data = Files.readAllBytes(path);
         return data;
     }
-    
-    public static ArrayList<byte[]> loadArrayList(String sourcePath) throws FileNotFoundException, IOException, ClassNotFoundException{
+
+    public static ArrayList<byte[]> loadArrayList(String sourcePath) throws FileNotFoundException, IOException, ClassNotFoundException {
         FileInputStream fis = new FileInputStream(sourcePath);
         ObjectInputStream ois = new ObjectInputStream(fis);
-        ArrayList<byte[]> tmp =  (ArrayList<byte[]>) ois.readObject();
+        ArrayList<byte[]> tmp = (ArrayList<byte[]>) ois.readObject();
         ois.close();
         return tmp;
     }
@@ -72,12 +75,12 @@ public class Utility implements Serializable {
         Files.write(path, output);
 
     }
-    
-    public static void writeArrayList(String sourcePath,ArrayList<byte[]> tmp) throws FileNotFoundException, IOException{
+
+    public static void writeArrayList(String sourcePath, ArrayList<byte[]> tmp) throws FileNotFoundException, IOException {
         FileOutputStream fos = new FileOutputStream(sourcePath);
         ObjectOutputStream oos = new ObjectOutputStream(fos);
         oos.writeObject(tmp);
-        System.out.println("scritto come: "+sourcePath+" size: "+tmp.size());
+        System.out.println("scritto come: " + sourcePath + " size: " + tmp.size());
         oos.close();
     }
 
@@ -174,15 +177,15 @@ public class Utility implements Serializable {
         return directoryListing;
 
     }
-    
-    public static SecretKey genMacKey(String alg) throws NoSuchAlgorithmException{
-        KeyGenerator kg=KeyGenerator.getInstance(alg);
+
+    public static SecretKey genMacKey(String alg) throws NoSuchAlgorithmException {
+        KeyGenerator kg = KeyGenerator.getInstance(alg);
         return kg.generateKey();
     }
-    
-    public static byte[] genMac(byte[] text,SecretKey sc) throws NoSuchAlgorithmException, InvalidKeyException{
-            Mac mac=Mac.getInstance(sc.getAlgorithm());
-            mac.init(sc);
+
+    public static byte[] genMac(byte[] text, SecretKey sc) throws NoSuchAlgorithmException, InvalidKeyException {
+        Mac mac = Mac.getInstance(sc.getAlgorithm());
+        mac.init(sc);
         return mac.doFinal(text);
     }
 
@@ -193,55 +196,47 @@ public class Utility implements Serializable {
             }
         }
     }
-    
-    public static byte[] compress(byte[] data ) throws IOException{
-         Deflater compressor = new Deflater(Deflater.BEST_COMPRESSION);
-        compressor.setInput(data);
-        compressor.finish();
-        ByteArrayOutputStream bos = new ByteArrayOutputStream(data.length);
 
-        // Compress the data
-        byte[] buf = new byte[1024];
-        while (!compressor.finished()) {
-            int count = compressor.deflate(buf);
-            bos.write(buf, 0, count);
-        }
-        try {
-            bos.close();
-        } catch (IOException e) {
-        }
+    public static byte[] compress(byte[] data) throws IOException {
+       Deflater deflater = new Deflater(Deflater.HUFFMAN_ONLY);
+        deflater.setInput(data);
 
-        // Get the compressed data
-        byte[] compressedData = bos.toByteArray();
-        bos.close();
-        return compressedData;
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
+
+        deflater.finish();
+        byte[] buffer = new byte[1024];
+        while (!deflater.finished()) {
+            int count = deflater.deflate(buffer); // returns the generated code... index  
+            outputStream.write(buffer, 0, count);
+        }
+        outputStream.close();
+        byte[] output = outputStream.toByteArray();
+
+        deflater.end();
+
+        return output;
+       
+    }
+
+    public static byte[] decompress(byte[] data) throws IOException, DataFormatException {
+        Inflater inflater = new Inflater();
+        inflater.setInput(data);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
+        byte[] buffer = new byte[1024];
+        while (!inflater.finished()) {
+            int count = inflater.inflate(buffer);
+            outputStream.write(buffer, 0, count);
+        }
+        outputStream.close();
+        byte[] output = outputStream.toByteArray();
+
+        inflater.end();
+
+        return output;
     }
     
-    public static byte[] decompress(byte[] data) throws IOException{
-         Inflater decompressor = new Inflater();
-        decompressor.setInput(data);
+   
 
-        // Create an expandable byte array to hold the decompressed data
-        ByteArrayOutputStream bos = new ByteArrayOutputStream(data.length);
-
-        // Decompress the data
-        byte[] buf = new byte[1024];
-        while (!decompressor.finished()) {
-            try {
-                int count = decompressor.inflate(buf);
-                bos.write(buf, 0, count);
-            } catch (DataFormatException e) {
-            }
-        }
-        try {
-            bos.close();
-        } catch (IOException e) {
-        }
-
-        // Get the decompressed data
-        byte[] decompressedData = bos.toByteArray();
-        bos.close();
-        return decompressedData;
-    }
 
 }

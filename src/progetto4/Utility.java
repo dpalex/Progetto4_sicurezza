@@ -8,10 +8,14 @@ package progetto4;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.nio.file.Files;
@@ -51,11 +55,26 @@ public class Utility implements Serializable {
         byte[] data = Files.readAllBytes(path);
         return data;
     }
+    
+    public static ArrayList<byte[]> loadArrayList(String sourcePath) throws FileNotFoundException, IOException, ClassNotFoundException{
+        FileInputStream fis = new FileInputStream(sourcePath);
+        ObjectInputStream ois = new ObjectInputStream(fis);
+        ArrayList<byte[]> tmp =  (ArrayList<byte[]>) ois.readObject();
+        ois.close();
+        return tmp;
+    }
 
     public static void writeFile(String sourcePath, byte[] output) throws IOException {
         Path path = Paths.get(sourcePath);
         Files.write(path, output);
 
+    }
+    
+    public static void writeArrayList(String sourcePath,ArrayList<byte[]> tmp) throws FileNotFoundException, IOException{
+        FileOutputStream fos = new FileOutputStream(sourcePath);
+        ObjectOutputStream oos = new ObjectOutputStream(fos);
+        oos.writeObject(tmp);
+        oos.close();
     }
 
     public static String getTimeFromServer(String id) {

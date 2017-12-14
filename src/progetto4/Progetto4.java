@@ -7,6 +7,7 @@ package progetto4;
 
 import static java.awt.PageAttributes.MediaType.B;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import static java.lang.System.out;
 import java.math.BigInteger;
@@ -34,7 +35,7 @@ public class Progetto4 {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+    public static void main(String[] args) throws IOException, NoSuchAlgorithmException, InvalidKeyException, FileNotFoundException, ClassNotFoundException {
         
       /*
       byte[] file = Utility.loadFile("/Users/f.did/Desktop/8971_eightbit.jpg");
@@ -77,7 +78,8 @@ public class Progetto4 {
       byte[] down=gio.download("shamir.pdf");
        Path currentRelativePath = Paths.get("src/progetto4");
       String path = currentRelativePath.toAbsolutePath().toString() + "/Repo/";
-       byte[] file1 = Arrays.copyOfRange(Utility.loadFile(path + "shamir.pdf"), 10, 11);
+      
+      
 
       //System.out.println("ricevuto: "+Base64.getEncoder().encodeToString(down));
       System.out.println("Controllo mac: "+gio.checkMac("shamir.pdf", down));

@@ -6,13 +6,16 @@
 package progetto4;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
@@ -25,7 +28,7 @@ import progetto4.SecretSharing;
  *
  * @author dp.alex
  */
-public class Client {
+public class Client implements Serializable{
 
     private HashMap<String, HashMap<BigInteger, String>> nameMapping = new HashMap<String, HashMap<BigInteger, String>>();
     private HashMap<String, HashMap<SecretKey, byte[]>> macMapping = new HashMap<String,HashMap<SecretKey, byte[]>>();
@@ -44,14 +47,14 @@ public class Client {
     public void upload(String name) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         Path currentRelativePath = Paths.get("src/progetto4");
         String path = currentRelativePath.toAbsolutePath().toString() + "/Repo/";
-        byte[] file = Arrays.copyOfRange(Utility.loadFile(path + name), 10, 11);
+        byte[] file = Utility.loadFile(path + name);
         //System.out.println("inviato: "+Base64.getEncoder().encodeToString(file));
         SecretKey sk= Utility.genMacKey("HmacSHA256");
         this.macMapping.put(name,new HashMap<SecretKey, byte[]>());
         this.macMapping.get(name).put(sk, Utility.genMac(file, sk));
         
         //System.out.print("Split ricevuto da shamir");
-        Map<BigInteger, byte[]> shares = this.shamirScheme.split(file);
+        Map<BigInteger, ArrayList<byte[]>> shares = this.shamirScheme.split(file);
         /* 
         for (Map.Entry<BigInteger,byte[]> s : shares.entrySet()) {
              System.out.println("Server: " + s.getKey());
@@ -71,9 +74,9 @@ public class Client {
 
     }
 
-    private HashMap<BigInteger, String> distribuite(Map<BigInteger, byte[]> shares) throws IOException {
+    private HashMap<BigInteger, String> distribuite(Map<BigInteger, ArrayList<byte[]>> shares) throws IOException {
         HashMap<BigInteger, String> tmp = new HashMap<BigInteger, String>();
-        for (Map.Entry<BigInteger, byte[]> s : shares.entrySet()) {
+        for (Map.Entry<BigInteger, ArrayList<byte[]>> s : shares.entrySet()) {
             Path path = Paths.get("src/progetto4/Servers/" + s.getKey().toString());
             File folder = new File(path.toString());
             Utility.printDebug(folder.exists(), "Cartella :" + s.getKey().toString() + " già esistente", debug);
@@ -87,7 +90,8 @@ public class Client {
                 fileName = UUID.randomUUID().toString() + ".parts";
                 f = new File(path + "/" + fileName);
             }
-            Utility.writeFile(path + "/" + fileName, s.getValue());
+            Utility.writeArrayList(fileName, s.getValue());
+            //Utility.writeFile(path + "/" + fileName,s.getValue());
             tmp.put(s.getKey(), fileName);
         }
         return tmp;
@@ -103,12 +107,12 @@ public class Client {
         return Arrays.equals(mac,Utility.genMac(downloaded, sK));
     }
     
-    public byte[] download(String name) throws IOException{
-        Map<BigInteger,byte[]> fileMap=new HashMap<BigInteger,byte[]>() {};
+    public byte[] download(String name) throws IOException, FileNotFoundException, ClassNotFoundException{
+        Map<BigInteger,ArrayList<byte[]>> fileMap=new HashMap<BigInteger,ArrayList<byte[]>>() {};
         
         for (Map.Entry<BigInteger, String> s : this.nameMapping.get(name).entrySet()) {
              Path path = Paths.get("src/progetto4/Servers/" + s.getKey().toString());
-             fileMap.put(s.getKey(),Utility.loadFile(path.toString()+"/"+s.getValue()));
+             fileMap.put(s.getKey(),Utility.loadArrayList(path.toString()+"/"+s.getValue()));
              
         }
         /*
@@ -119,6 +123,10 @@ public class Client {
              System.out.println("file: " + Base64.getEncoder().encodeToString(s.getValue()));
     }*/
         return this.shamirScheme.getSecret(fileMap);
+    }
+    
+    public void menu(){
+        
     }
     
     

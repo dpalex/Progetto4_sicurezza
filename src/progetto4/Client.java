@@ -29,7 +29,6 @@ public class Client {
 
     private HashMap<String, HashMap<BigInteger, String>> nameMapping = new HashMap<String, HashMap<BigInteger, String>>();
     private HashMap<String, HashMap<SecretKey, byte[]>> macMapping = new HashMap<String,HashMap<SecretKey, byte[]>>();
-    
     private String id;
     private SecretSharing shamirScheme;
     private boolean debug = false;
@@ -90,10 +89,8 @@ public class Client {
             }
             Utility.writeFile(path + "/" + fileName, s.getValue());
             tmp.put(s.getKey(), fileName);
-
         }
         return tmp;
-
     }
 
     public boolean checkMac(String name, byte[] downloaded) throws NoSuchAlgorithmException, InvalidKeyException {

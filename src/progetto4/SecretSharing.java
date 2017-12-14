@@ -25,29 +25,28 @@ public class SecretSharing {
     private int k;
     private int n;
     private int CERTAINTY = 50;
-    private int modLength = 16; // n bit del p 
+    private int modLength = 512; // n bit del p 
     private BigInteger primeN;
-    private int blocksize = 1; //in byte 
+    private int blocksize = 64; //in byte 
 
     public SecretSharing(int k, int n) {
 
         this.k = k;
         this.n = n;
 
-
         BigInteger prime = this.genPrime();
         BigInteger two = new BigInteger("2");
         BigInteger maxNumberBlock = two.pow(8 * this.blocksize); // 2 ^ n° bit
         
-        while(prime.compareTo(maxNumberBlock) != 1){
+        while(prime.compareTo(maxNumberBlock.divide(two)) != 1){
             prime = this.genPrime();
         }
         
         this.primeN=prime;
+        out.println("Primo generato : "+this.primeN);
   
     }
 
- 
     public Map<BigInteger, ArrayList<byte []>> split(byte[] secret) throws IOException {
         
         out.println("\nConversione Base64...");
@@ -58,6 +57,8 @@ public class SecretSharing {
         out.println("\nSplit dei blocchi...");
         out.println("\nDimensione in base 64"+secretBase64.length);
         out.println("\nNumer Blocchi da splittare : " + secretBase64.length / this.blocksize);
+        
+        byte[] block;
         
         ArrayList<byte[]> blockList;
         ArrayList<BigInteger> a = new ArrayList<BigInteger>();
@@ -72,14 +73,19 @@ public class SecretSharing {
         for (int i = 0; i < secretBase64.length / this.blocksize; i++) {
 
             j = this.blocksize * i;  // indice del blocco
-            byte[] block = Arrays.copyOfRange(secretBase64, j, j + this.blocksize); // da indice del blocco al successivo
-            out.println("blocco "+i+" "+new BigInteger(block));
+            
+            if(j+ this.blocksize <= secretBase64.length){
+                block = Arrays.copyOfRange(secretBase64, j, j + this.blocksize); // da indice del blocco al successivo
+            }else{
+                 block = Arrays.copyOfRange(secretBase64, j, j + secretBase64.length);
+            }
+        //    out.println("blocco "+i+" "+new BigInteger(block));
             ArrayList<BigInteger> sbi = this.splitBlock(block, a);
             
             for (int n = 1; n < sbi.size() + 1; n++) { // for per il numero di partecipanti
 
                 byte[] value = sbi.get(n - 1).toByteArray();   // prendo il polinomio del blocco n 
-                out.println("f"+n+" "+new BigInteger(value));
+         //       out.println("f"+n+" "+new BigInteger(value));
 
                 if (!mapN.containsKey(BigInteger.valueOf(n))) {  // se la mappa non lo contiene
                     blockList =  new ArrayList<byte[]>();
@@ -138,25 +144,22 @@ public class SecretSharing {
         return RP;
     }
 
-
     public byte[] getSecret(Map<BigInteger, ArrayList<byte[]> > Kp) throws IOException {
 
         //iterare i blocchi e concatenarli
-        out.print("\nconversione del segreto...");
+        out.println("\nconversione del segreto...");
         BigInteger tmp = null;
         byte[] secretFinal = null;
 
         if (Kp.size() >= this.k) {
-            
 
             List<BigInteger> idList = new ArrayList<BigInteger>(Kp.keySet()); // set degli ID
             idList = idList.subList(0, this.k);  // prendo i K che mi servono
-            out.println("quanti k uso ? "+idList.size());
+            out.println("K usati : "+idList.size());
 
                for (int i = 0; i < Kp.get(idList.get(0)).size() ; i++) {    // itero i blocchi
 
-            for (BigInteger idcurrent : idList) {  //id corrente dal set di ID
-                
+            for (BigInteger idcurrent : idList) {  //id corrente dal set di ID   
                 byte[] block =  Kp.get(idcurrent).get(i); //prendo il blocco corrente
                 //out.println("size block :"+block.length);
                 BigInteger valueID = new BigInteger(block); //nominatore
@@ -170,7 +173,6 @@ public class SecretSharing {
                     }
 
                 }
-                
                 if (tmp == null) {
                     tmp = (valueID.divide(den)).mod(this.primeN);
 
@@ -178,7 +180,6 @@ public class SecretSharing {
                     tmp = tmp.add((valueID.divide(den)).mod(this.primeN));
 
                 }
-                out.println("blocco "+i+" risolto "+tmp);
 
             } //si chiude la risoluzione del blocco
            

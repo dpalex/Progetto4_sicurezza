@@ -5,6 +5,7 @@
  */
 package progetto4;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import static java.lang.System.out;
 import java.math.BigInteger;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
+import java.util.zip.GZIPOutputStream;
 
 /**
  *
@@ -25,14 +27,16 @@ public class SecretSharing {
     private int k;
     private int n;
     private int CERTAINTY = 50;
-    private int modLength = 512; // n bit del p 
+    private int modLength ; // n bit del p 
     private BigInteger primeN;
-    private int blocksize = 64; //in byte 
+    private int blocksize ; //in byte 
 
-    public SecretSharing(int k, int n) {
+    public SecretSharing(int k, int n ,int blocksize) {
 
         this.k = k;
         this.n = n;
+        this.blocksize = blocksize;
+        this.modLength = 8*blocksize;
 
         BigInteger prime = this.genPrime();
         BigInteger two = new BigInteger("2");
@@ -220,5 +224,6 @@ public class SecretSharing {
         } while (r.compareTo(BigInteger.ZERO) < 0 || r.compareTo(p) >= 0);
         return r;
     }
+    
 
 }

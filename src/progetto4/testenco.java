@@ -28,7 +28,7 @@ public class testenco {
     public static void main(String[] args) throws IOException {
        byte[] data = Utility.loadFile("/Users/f.did/Desktop/JPEG_20160830_195147_115183616.jpg");
        out.println(data.length);
-       SecretSharing sh = new SecretSharing(2,3);
+       SecretSharing sh = new SecretSharing(2,3,64);
         
        Map<BigInteger, ArrayList<byte[]>> shareMap = sh.split(data);
        for(BigInteger k :shareMap.keySet()){
@@ -72,36 +72,6 @@ public class testenco {
 
     }
 
-    public static class Zipper {
-
-        
-        public static byte[]  Zip(byte[] dataToCompress) {
-
-            try {
-                ByteArrayOutputStream byteStream
-                        = new ByteArrayOutputStream(dataToCompress.length);
-                try {
-                    GZIPOutputStream zipStream
-                            = new GZIPOutputStream(byteStream);
-                    try {
-                        zipStream.write(dataToCompress);
-                    } finally {
-                        zipStream.close();
-                    }
-                } finally {
-                    byteStream.close();
-                }
-
-                byte[] compressedData = byteStream.toByteArray();
-
-                return compressedData;
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-    }
+    
 
 }

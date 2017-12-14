@@ -152,11 +152,14 @@ public class Utility implements Serializable {
 
     }
     
-    public static byte[] genMac(byte[] text) throws NoSuchAlgorithmException, InvalidKeyException{
-        KeyGenerator kg=KeyGenerator.getInstance("HmacSHA256");
-        SecretKey sc=kg.generateKey();
-        Mac mac=Mac.getInstance(sc.getAlgorithm());
-        mac.init(sc);
+    public static SecretKey genMacKey(String alg) throws NoSuchAlgorithmException{
+        KeyGenerator kg=KeyGenerator.getInstance(alg);
+        return kg.generateKey();
+    }
+    
+    public static byte[] genMac(byte[] text,SecretKey sc) throws NoSuchAlgorithmException, InvalidKeyException{
+            Mac mac=Mac.getInstance(sc.getAlgorithm());
+            mac.init(sc);
         return mac.doFinal(text);
     }
 

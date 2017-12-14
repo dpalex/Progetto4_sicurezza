@@ -76,11 +76,11 @@ public class Progetto4 {
       gio.setShamirScheme(3, 5);
       gio.upload("shamir.pdf");
       byte[] down=gio.download("shamir.pdf");
-       Path currentRelativePath = Paths.get("src/progetto4");
+      System.out.println(down.length);
+      Path currentRelativePath = Paths.get("src/progetto4");
       String path = currentRelativePath.toAbsolutePath().toString() + "/Repo/";
-      
-      
-
+      String download = currentRelativePath.toAbsolutePath().toString() + "/Download/";
+      Utility.writeFile(download+"shamir.pdf", down);
       //System.out.println("ricevuto: "+Base64.getEncoder().encodeToString(down));
       System.out.println("Controllo mac: "+gio.checkMac("shamir.pdf", down));
           

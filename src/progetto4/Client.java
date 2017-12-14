@@ -90,7 +90,7 @@ public class Client implements Serializable{
                 fileName = UUID.randomUUID().toString() + ".parts";
                 f = new File(path + "/" + fileName);
             }
-            Utility.writeArrayList(fileName, s.getValue());
+            Utility.writeArrayList(path + "/" +fileName, s.getValue());
             //Utility.writeFile(path + "/" + fileName,s.getValue());
             tmp.put(s.getKey(), fileName);
         }

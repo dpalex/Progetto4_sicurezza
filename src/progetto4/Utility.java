@@ -74,6 +74,7 @@ public class Utility implements Serializable {
         FileOutputStream fos = new FileOutputStream(sourcePath);
         ObjectOutputStream oos = new ObjectOutputStream(fos);
         oos.writeObject(tmp);
+        System.out.println("scritto come: "+sourcePath+" size: "+tmp.size());
         oos.close();
     }
 

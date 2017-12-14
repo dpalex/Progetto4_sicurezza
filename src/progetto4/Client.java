@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.UUID;
 import javax.crypto.SecretKey;
 import progetto4.SecretSharing;
@@ -34,6 +35,7 @@ public class Client implements Serializable{
     private HashMap<String, HashMap<SecretKey, byte[]>> macMapping = new HashMap<String,HashMap<SecretKey, byte[]>>();
     private String id;
     private SecretSharing shamirScheme;
+    public ArrayList<String> listFileName=new ArrayList<String>();
     private boolean debug = false;
 
     public Client(String id) {
@@ -50,6 +52,8 @@ public class Client implements Serializable{
         byte[] file = Utility.loadFile(path + name);
         //genero una secretKey per MAC
         SecretKey sk= Utility.genMacKey("HmacSHA256");
+        //inserisco il nome del file nel database utente
+        this.listFileName.add(name);
         //istanzio e associo una mappa al nome del file
         this.macMapping.put(name,new HashMap<SecretKey, byte[]>());
         //inserisco nella mappa la secretKey e il mac associato al file con la secretKey in considerazione
@@ -113,10 +117,8 @@ public class Client implements Serializable{
         return this.shamirScheme.getSecret(fileMap);
     }
     
-    public void menu(){
-        
+    public ArrayList<String> getNameFilesOnline(){
+        return this.listFileName;
     }
-    
-    
 
 }

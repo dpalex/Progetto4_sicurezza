@@ -6,15 +6,23 @@
 package progetto4;
 
 import static java.awt.PageAttributes.MediaType.B;
+import java.io.File;
 import java.io.IOException;
 import static java.lang.System.out;
 import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.InvalidKeyException;
 import java.security.Key;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.UUID;
 import javafx.util.Pair;
 
 /**
@@ -26,9 +34,9 @@ public class Progetto4 {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         
-      
+      /*
       byte[] file = Utility.loadFile("/Users/f.did/Desktop/8971_eightbit.jpg");
       SecretSharing s = new SecretSharing(2,5); //k=2 e n=3
       byte[] tmp = new byte[file.length];
@@ -62,6 +70,18 @@ public class Progetto4 {
     
    //   out.println("Segreto ricostruito : "+s2);
     //  System.out.println("Secret  base64 -> "+Base64.getEncoder().encodeToString(secretr)); */
+      
+      Client gio=new Client("giovanni");
+      gio.setShamirScheme(3, 5);
+      gio.upload("shamir.pdf");
+      byte[] down=gio.download("shamir.pdf");
+       Path currentRelativePath = Paths.get("src/progetto4");
+      String path = currentRelativePath.toAbsolutePath().toString() + "/Repo/";
+       byte[] file1 = Arrays.copyOfRange(Utility.loadFile(path + "shamir.pdf"), 10, 11);
+
+      //System.out.println("ricevuto: "+Base64.getEncoder().encodeToString(down));
+      System.out.println("Controllo mac: "+gio.checkMac("shamir.pdf", down));
+          
       }
       
       }

@@ -31,6 +31,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 import java.util.TimeZone;
+import javax.crypto.KeyGenerator;
+import javax.crypto.Mac;
+import javax.crypto.SecretKey;
 
 /**
  *
@@ -78,52 +81,6 @@ public class Utility implements Serializable {
         return c;
     }
 
-    public static byte[] concatMerkleByte(byte a, byte[] b, byte c, byte[] d, byte e, byte[] f) throws IOException {
-
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        outputStream.write(a);
-        outputStream.write(b);
-        outputStream.write(c);
-        outputStream.write(d);
-        outputStream.write(e);
-        outputStream.write(f);
-
-        byte tmp[] = outputStream.toByteArray();
-        outputStream.close();
-        return tmp;
-    }
-
-    public static String getIndexNameToSave(String id, String path) {
-        File dir = new File(path);
-        String[] dirName = dir.list();
-        int k = 0;
-
-        for (int i = 0; i < dirName.length; i++) {
-            if (dirName[i].matches(".*(" + id + ").*")) {
-
-                k += 1;
-            }
-        }
-        return Integer.toString(k);
-    }
-
-    public static String[] getMyFileToVerify(String id, String path) {
-        File dir = new File(path);
-        String[] dirName = dir.list();
-        List<String> tmp = new ArrayList<String>();
-        for (int i = 0; i < dirName.length; i++) {
-            if (dirName[i].matches(".*(" + id + ").*")) {
-                tmp.add(dirName[i]);
-            }
-        }
-        String[] names = new String[tmp.size()];
-        for (int i = 0; i < tmp.size(); i++) {
-            names[i] = tmp.get(i);
-        }
-        Arrays.sort(names);
-        return names;
-    }
-
     public static byte[] toHash256(byte[] file) throws NoSuchAlgorithmException {
         MessageDigest sha = MessageDigest.getInstance("SHA-256");
         sha.update(file);
@@ -147,42 +104,6 @@ public class Utility implements Serializable {
         dsa.initVerify(userKeyPub);
         dsa.update(signedText);
         return dsa.verify(sign);
-    }
-
-    public static String getNameFromHash(String pathFile) throws IOException, NoSuchAlgorithmException {
-        MessageDigest sha = MessageDigest.getInstance("SHA-256");
-        sha.update(loadFile(pathFile));
-        return sha.digest().toString();
-    }
-
-    //funzione che ritorna un' array di stringhe rappresentanti i campi dell'intestazione
-    public static String[] intestToStringArray(byte[] intest, int elem) {
-        String intestString = new String(intest);
-        String[] intestVect = new String[elem];
-        int j = 0;
-        int k = 0;
-        for (int i = 0; i < intestString.length(); i++) {
-            if (intestString.charAt(i) == '/') {
-                intestVect[k] = intestString.substring(j, i);
-                j = i + 1;
-                k++;
-            }
-        }
-
-        return intestVect;
-    }
-
-    public static byte[] arrayToVerify(byte[] intest, byte[] hi, byte[] sequenceMerkle, byte[] sh, byte[] preSh) throws IOException {
-        ByteArrayOutputStream toVerifyStream = new ByteArrayOutputStream();
-        toVerifyStream.write(intest.length);
-        toVerifyStream.write(intest);
-        toVerifyStream.write(hi);
-        toVerifyStream.write(sequenceMerkle);
-        toVerifyStream.write(sh);
-        toVerifyStream.write(preSh);
-        byte[] toVerify = toVerifyStream.toByteArray();
-        toVerifyStream.close();
-        return toVerify;
     }
 
     public static void writeTxt(String path, String Text) throws IOException {
@@ -229,6 +150,25 @@ public class Utility implements Serializable {
 
         return directoryListing;
 
+    }
+    
+    public static SecretKey genMacKey(String alg) throws NoSuchAlgorithmException{
+        KeyGenerator kg=KeyGenerator.getInstance(alg);
+        return kg.generateKey();
+    }
+    
+    public static byte[] genMac(byte[] text,SecretKey sc) throws NoSuchAlgorithmException, InvalidKeyException{
+            Mac mac=Mac.getInstance(sc.getAlgorithm());
+            mac.init(sc);
+        return mac.doFinal(text);
+    }
+
+    public static void printDebug(boolean condition, String message, boolean debug) {
+        if (debug) {
+            if (condition) {
+                System.out.println(message);
+            }
+        }
     }
 
 }

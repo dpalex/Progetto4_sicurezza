@@ -33,13 +33,13 @@ public class testenco {
     public static void main(String[] args) throws IOException, DataFormatException {
 
         byte[] data = Utility.loadFile("/Users/f.did/Desktop/testfile.rtf");
-         SecretSharing sh = new SecretSharing(2,10,32);
+         SecretSharing sh = new SecretSharing(3,4,1);
         
        Map<BigInteger, ArrayList<byte[]>> shareMap = sh.split(data);
        Map<BigInteger, ArrayList<byte[]>> rMap =  new TreeMap<BigInteger, ArrayList<byte[]>>();
        
-       for(BigInteger k :shareMap.keySet()){
-           if(k.compareTo(BigInteger.valueOf(1))!=0){
+       /*for(BigInteger k :shareMap.keySet()){
+           if(k.compareTo(BigInteger.valueOf(12))!=0){
            rMap.put(k, shareMap.get(k));
          for(BigInteger k2 :shareMap.keySet()){
              if(k.compareTo(k2)!=0){
@@ -51,6 +51,26 @@ public class testenco {
                  rMap.remove(k2);
              }
                       }
+         rMap.clear();
+           }
+       }*/
+       
+       for(BigInteger k :shareMap.keySet()){
+           if(k.compareTo(BigInteger.valueOf(12))!=0){
+           rMap.put(k, shareMap.get(k));
+         for(BigInteger k2 :shareMap.keySet()){
+              for(BigInteger k3 :shareMap.keySet()){
+             if(k.compareTo(k2)!=0 && k.compareTo(k3)!=0 && k2.compareTo(k3)!=0 ){
+                 out.println("\nInizio risoluzione : "+k+" - "+k2+" - "+k3);
+                 rMap.put(k2, shareMap.get(k2));
+                 rMap.put(k3, shareMap.get(k3));
+                 byte [] file = sh.getSecret(rMap);
+                 Utility.writeFile("/Users/f.did/Desktop/test/prova_"+k+"_"+k2+"_"+k3+".rtf", file); 
+                 rMap.remove(k2);
+                 rMap.remove(k3);
+             }
+                      }
+         }
          rMap.clear();
            }
        }

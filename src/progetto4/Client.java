@@ -35,7 +35,7 @@ public class Client implements Serializable{
     private HashMap<String, HashMap<SecretKey, byte[]>> macMapping = new HashMap<String,HashMap<SecretKey, byte[]>>();
     private String id;
     private SecretSharing shamirScheme;
-    public ArrayList<String> listFileName=new ArrayList<String>();
+    private ArrayList<String> listFileName=new ArrayList<String>();
     private boolean debug = false;
 
     public Client(String id) {
@@ -62,6 +62,8 @@ public class Client implements Serializable{
         Map<BigInteger, ArrayList<byte[]>> shares = this.shamirScheme.split(file);
         //aggiorno il value associato al nome tramite il metodo distribuite
         this.nameMapping.put(name, this.distribuite(shares));
+        File f=new File(path.toString()+name);
+        f.delete();
     }
 
     private HashMap<BigInteger, String> distribuite(Map<BigInteger, ArrayList<byte[]>> shares) throws IOException {
@@ -103,7 +105,7 @@ public class Client implements Serializable{
         return Arrays.equals(mac,Utility.genMac(downloaded, sK));
     }
     
-    public byte[] download(String name) throws IOException, FileNotFoundException, ClassNotFoundException{
+    public boolean download(String name) throws IOException, FileNotFoundException, ClassNotFoundException, NoSuchAlgorithmException, InvalidKeyException{
         //preparo la mappatura server-Arraylist contente gli n-split del segreto
         Map<BigInteger,ArrayList<byte[]>> fileMap=new HashMap<BigInteger,ArrayList<byte[]>>() {};
         //iterlo la mappatura server-UUID
@@ -114,11 +116,23 @@ public class Client implements Serializable{
         }
         //utilizzo l'interpolazione in f0 in shamirScheme passandogli gli n-split associati al server
         //ritorno il contenuto del segreto
-        return this.shamirScheme.getSecret(fileMap);
+        Path currentRelativePath = Paths.get("src/progetto4");
+        String download = currentRelativePath.toAbsolutePath().toString() + "/Download/";
+        byte[] downloadFile=this.shamirScheme.getSecret(fileMap);
+        Utility.writeFile(download + name, downloadFile);
+        return this.checkMac(name, downloadFile);
     }
     
     public ArrayList<String> getNameFilesOnline(){
         return this.listFileName;
+    }
+    
+    public ArrayList<String> getServerOnline(String nameFile){
+        ArrayList<String> servers=new ArrayList<String>();
+        for (Map.Entry<BigInteger, String> s : this.nameMapping.get(nameFile).entrySet()) {
+            servers.add(s.getKey().toString());
+        }
+        return servers;
     }
 
 }

@@ -53,13 +53,11 @@ public class SecretSharing {
 
     public Map<BigInteger, ArrayList<byte[]>> split(byte[] secret) throws IOException {
 
-        out.println("\nConversione Base64...");
+      
         byte[] secretBase64 = Base64.getEncoder().encode(secret);
 
         Map<BigInteger, ArrayList<byte[]>> mapN = new TreeMap<BigInteger, ArrayList<byte[]>>();
-        out.println("\nDimensione in byte : " + secret.length);
-        out.println("\nDimensione in base 64 : " + secretBase64.length);
-        
+      
         
         byte[] block;
 
@@ -70,15 +68,11 @@ public class SecretSharing {
             BigInteger ai = this.randomZp(this.primeN) ;
             a.add(ai);
             if(this.primeN.compareTo(ai)!=1){
-                         out.println("#######*********************#######*********************#######*********************#######*********************#######*********************");
                      }
-            out.println("Coefficienti generati a" + i + " : " + a.get(i));
         }
         
         int resto = secretBase64.length % this.blocksize;
-        out.println("\nNumer Blocchi da splittare : " + secretBase64.length / this.blocksize);
-        out.println("\nResto del blocco : "+resto);
-        out.println("\nSplit dei blocchi...");
+ 
        
         int j = 0;
         for (int i = 0; i < secretBase64.length / this.blocksize; i++) { // scorro tutti i blocchi
@@ -86,7 +80,6 @@ public class SecretSharing {
             j = this.blocksize * i;  // indice del blocco
 
             block = Arrays.copyOfRange(secretBase64, j, j + this.blocksize); // da indice del blocco al successivo
-            out.println("Size del blocco : "+block.length);
            
             ArrayList<BigInteger> sbi = this.splitBlock(block, a);
 
@@ -96,9 +89,7 @@ public class SecretSharing {
         
         if(resto!=0){ //se rimane qualche blocco
             
-            out.println("elaboro resto : "+resto);
             block = Arrays.copyOfRange(secretBase64, (secretBase64.length-resto), secretBase64.length);
-            out.println("Size del blocco : "+block.length);
             ArrayList<BigInteger> sbi = this.splitBlock(block, a);
             this.concShareToMap(sbi, mapN);
                
@@ -112,7 +103,7 @@ public class SecretSharing {
         
          ArrayList blockList;
          
-         out.println("-----------");
+         
         
         for (int n = 1; n < sbi.size() + 1; n++) {
                  
@@ -120,19 +111,13 @@ public class SecretSharing {
                 
                  
                  if (!mapN.containsKey(BigInteger.valueOf(n))) {  // se la mappa non lo contiene
-                     out.println("Inserisco per la prima volta ad N : "+BigInteger.valueOf(n) + " "+new BigInteger(value));
-                     if(this.primeN.compareTo(new BigInteger(value))!=1){
-                         out.println("********************************************************************************************************************************************************");
-                     }
+                    
                     blockList = new ArrayList<byte[]>();
                     blockList.add(value);
                     mapN.put(BigInteger.valueOf(n), blockList);  // inseriscilo
 
                 } else {
-                     out.println("Inserisco ad N : "+BigInteger.valueOf(n)+ " "+new BigInteger(value));
-                     if(this.primeN.compareTo(new BigInteger(value))!=1){
-                         out.println("********************************************************************************************************************************************************");
-                     }
+                  
                     blockList = (ArrayList<byte[]>) mapN.get(BigInteger.valueOf(n));
                     blockList.add(value);
                     mapN.replace(BigInteger.valueOf(n), blockList); //concatena vc al nuovo ed inseriscilo
@@ -140,7 +125,6 @@ public class SecretSharing {
                 }
                  
              }
-        out.println("-----------");
         
         
     }

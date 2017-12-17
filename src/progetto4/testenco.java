@@ -9,6 +9,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import static java.lang.System.out;
 import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -32,28 +33,36 @@ public class testenco {
      */
     public static void main(String[] args) throws IOException, DataFormatException {
 
-        byte[] data = Utility.loadFile("/Users/f.did/Desktop/testfile.rtf");
-         SecretSharing sh = new SecretSharing(3,4,1);
+        byte[] data ={71}; //Utility.loadFile("/Users/f.did/Desktop/VID-20161126-WA0015.mp4");
+    //    Random r = new SecureRandom();// ; //{52,123,111,-45};//
+    //    r.nextBytes(data);
+   //     out.println(new BigInteger(data));
+        
+         SecretSharing sh = new SecretSharing(2,5,1);
         
        Map<BigInteger, ArrayList<byte[]>> shareMap = sh.split(data);
        Map<BigInteger, ArrayList<byte[]>> rMap =  new TreeMap<BigInteger, ArrayList<byte[]>>();
+       BigInteger dB= new BigInteger(data);
+      //  out.println("Segreto : "+dB);
        
-       /*for(BigInteger k :shareMap.keySet()){
-           if(k.compareTo(BigInteger.valueOf(12))!=0){
+       for(BigInteger k :shareMap.keySet()){
+           if(k.compareTo(BigInteger.valueOf(33))!=0){
            rMap.put(k, shareMap.get(k));
          for(BigInteger k2 :shareMap.keySet()){
              if(k.compareTo(k2)!=0){
-                 out.println("\nInizio risoluzione : "+k+" - "+k2);
                  rMap.put(k2, shareMap.get(k2));
                  byte [] file = sh.getSecret(rMap);
-                 Utility.writeFile("/Users/f.did/Desktop/test/prova_"+k+"_"+k2+".rtf", file); 
-                 out.println("\nHo risolto : "+k+" - "+k2);
+                 boolean b = dB.compareTo(new BigInteger(file)) == 0;
+                 out.println(k+" - "+k2+" - |"+b+"|              Segreto : "+ new BigInteger(file));
+           //      Utility.writeFile("/Users/f.did/Desktop/test/prova_"+k+"_"+k2+".mp4", file); 
                  rMap.remove(k2);
              }
                       }
          rMap.clear();
            }
-       }*/
+       }
+/*
+        out.println("Segreto : "+dB);
        
        for(BigInteger k :shareMap.keySet()){
            if(k.compareTo(BigInteger.valueOf(12))!=0){
@@ -61,11 +70,13 @@ public class testenco {
          for(BigInteger k2 :shareMap.keySet()){
               for(BigInteger k3 :shareMap.keySet()){
              if(k.compareTo(k2)!=0 && k.compareTo(k3)!=0 && k2.compareTo(k3)!=0 ){
-                 out.println("\nInizio risoluzione : "+k+" - "+k2+" - "+k3);
                  rMap.put(k2, shareMap.get(k2));
                  rMap.put(k3, shareMap.get(k3));
                  byte [] file = sh.getSecret(rMap);
-                 Utility.writeFile("/Users/f.did/Desktop/test/prova_"+k+"_"+k2+"_"+k3+".rtf", file); 
+                 boolean b = dB.compareTo(new BigInteger(file)) == 0;
+                 out.println(k+" - "+k2+" - "+k3+" |"+b+"|              Segreto : "+ new BigInteger(file));
+                 out.println("\n"+k+" - "+k2+" - "+k3+" |"+b+"|              Segreto : "+ dB);
+              //   Utility.writeFile("/Users/f.did/Desktop/test/prova_"+k+"_"+k2+"_"+k3+".rtf", file); 
                  rMap.remove(k2);
                  rMap.remove(k3);
              }
@@ -74,7 +85,7 @@ public class testenco {
          rMap.clear();
            }
        }
-
+*/
 
  
  

@@ -20,6 +20,7 @@ import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import static java.lang.System.out;
 import java.lang.reflect.Array;
+import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -73,7 +74,7 @@ public class Utility implements Serializable {
     public static void writeFile(String sourcePath, byte[] output) throws IOException {
         Path path = Paths.get(sourcePath);
         Files.write(path, output);
-        
+
     }
 
     public static void writeArrayList(String sourcePath, ArrayList<byte[]> tmp) throws FileNotFoundException, IOException {
@@ -103,7 +104,9 @@ public class Utility implements Serializable {
         outputStream.write(a);
         outputStream.write(b);
         byte c[] = outputStream.toByteArray();
+        outputStream.flush();
         outputStream.close();
+
         return c;
     }
 
@@ -198,7 +201,7 @@ public class Utility implements Serializable {
     }
 
     public static byte[] compress(byte[] data) throws IOException {
-       Deflater deflater = new Deflater(Deflater.HUFFMAN_ONLY);
+        Deflater deflater = new Deflater(Deflater.HUFFMAN_ONLY);
         deflater.setInput(data);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
@@ -215,7 +218,7 @@ public class Utility implements Serializable {
         deflater.end();
 
         return output;
-       
+
     }
 
     public static byte[] decompress(byte[] data) throws IOException, DataFormatException {
@@ -235,8 +238,28 @@ public class Utility implements Serializable {
 
         return output;
     }
-    
-   
 
+    public static BigInteger gcd(BigInteger a, BigInteger b) {
+        if (a.compareTo(BigInteger.ZERO) == 0) {
+            return b;
+        }
+        return gcd(b.mod(a), a);
+    }
+
+    public static BigInteger lcm(BigInteger a, BigInteger b) {
+        BigInteger m = a.multiply(b.divide(gcd(a, b)));
+        return m;
+    }
+    
+    public static BigInteger lcm(ArrayList<BigInteger> input)
+{
+    BigInteger result = input.get(0);
+    for(int i = 1; i < input.size(); i++) {
+        result = lcm(result, input.get(i));
+    }
+    return result;
+}
+    
+    
 
 }

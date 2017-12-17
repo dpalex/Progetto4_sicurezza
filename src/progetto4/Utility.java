@@ -5,7 +5,9 @@
  */
 package progetto4;
 
+import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,7 +16,9 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.ObjectInput;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Serializable;
@@ -31,6 +35,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
 import java.security.SignatureException;
+import java.security.spec.InvalidKeySpecException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,8 +47,11 @@ import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.Inflater;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
 import javax.crypto.Mac;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 
 /**
@@ -74,6 +82,16 @@ public class Utility implements Serializable {
     public static void writeFile(String sourcePath, byte[] output) throws IOException {
         Path path = Paths.get(sourcePath);
         Files.write(path, output);
+
+    }
+
+    public static byte[] getByteArrayFromObject(ArrayList<byte[]> c) throws FileNotFoundException, IOException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutput out =  new ObjectOutputStream(bos);
+        out.writeObject(c);
+        byte[] tmp = bos.toByteArray();
+        out.close();
+        return tmp;
 
     }
 
@@ -159,8 +177,22 @@ public class Utility implements Serializable {
 
     }
 
+    public static void removeDirectory(File dir) {
+        if (dir.isDirectory()) {
+            File[] files = dir.listFiles();
+            if (files != null && files.length > 0) {
+                for (File aFile : files) {
+                    removeDirectory(aFile);
+                }
+            }
+            dir.delete();
+        } else {
+            dir.delete();
+        }
+    }
+
     public static String[] getPathFiles(String x) {
-        Path currentRelativePath = Paths.get("src/progetto3");
+        Path currentRelativePath = Paths.get("src/progetto4");
         String s = currentRelativePath.toAbsolutePath().toString();
         String myDirectoryPath = s + "/" + x;
         File dir = new File(myDirectoryPath);
@@ -239,6 +271,7 @@ public class Utility implements Serializable {
         return output;
     }
 
+
     public static BigInteger gcd(BigInteger a, BigInteger b) {
         if (a.compareTo(BigInteger.ZERO) == 0) {
             return b;
@@ -261,5 +294,27 @@ public class Utility implements Serializable {
 }
     
     
+    public static void saveSession(Client c, String id) throws FileNotFoundException, IOException, ClassNotFoundException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutput out = new ObjectOutputStream(bos);
+        out.writeObject(c);
+        byte[] byteClass = bos.toByteArray();
+        out.close();
+        Path currentRelativePath = Paths.get("src/progetto4");
+        String clients = currentRelativePath.toAbsolutePath().toString() + "/Clients/";
+        Utility.writeFile(clients + id, byteClass);
+    }
+
+    public static Client loadSession(String id) throws ClassNotFoundException, IOException {
+        Path currentRelativePath = Paths.get("src/progetto4");
+        String clients = currentRelativePath.toAbsolutePath().toString() + "/Clients/";
+        ByteArrayInputStream bis = new ByteArrayInputStream(loadFile(clients + id));
+        ObjectInput in = null;
+        in = new ObjectInputStream(bis);
+        Client tmp = (Client) in.readObject();
+        return tmp;
+
+    }
+
 
 }

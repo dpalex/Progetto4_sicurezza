@@ -3,9 +3,17 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+<<<<<<< HEAD
             <file>file:/Users/f.did/Documents/GitHub/Progetto4_sicurezza/src/progetto4/testenco.java</file>
             <file>file:/Users/f.did/Documents/GitHub/Progetto4_sicurezza/src/progetto4/SecretSharing.java</file>
             <file>file:/Users/f.did/Documents/GitHub/Progetto4_sicurezza/src/progetto4/Utility.java</file>
+=======
+            <file>file:/Users/dp.alex/Documents/GitHub/Progetto4_sicurezza/src/progetto4/NewMain.java</file>
+            <file>file:/Users/dp.alex/Documents/GitHub/Progetto4_sicurezza/src/progetto4/SecretSharing.java</file>
+            <file>file:/Users/dp.alex/Documents/GitHub/Progetto4_sicurezza/src/progetto4/Progetto4.java</file>
+            <file>file:/Users/dp.alex/Documents/GitHub/Progetto4_sicurezza/src/progetto4/Utility.java</file>
+            <file>file:/Users/dp.alex/Documents/GitHub/Progetto4_sicurezza/src/progetto4/Client.java</file>
+>>>>>>> f47e93318aa28320a5d32466fca937a8958a7433
         </group>
     </open-files>
 </project-private>

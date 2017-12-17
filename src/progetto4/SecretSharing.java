@@ -42,12 +42,12 @@ public class SecretSharing {
         BigInteger two = new BigInteger("2");
         BigInteger maxNumberBlock = (two.pow(8 * this.blocksize)); // 2 ^ n° bit
 
-     /*   while (prime.compareTo(maxNumberBlock) != 1) {
+      /* while (prime.compareTo(maxNumberBlock) != 1) {
             prime = this.genPrime();
         }
-        this.primeN = prime; 
+        this.primeN = prime; */
 
-        out.println("Primo generato : " + this.primeN);*/
+        out.println("Primo generato : " + this.primeN);
 
     }
 
@@ -55,71 +55,50 @@ public class SecretSharing {
 
       
         byte[] secretBase64 = Base64.getEncoder().encode(secret);
-     /*   for(int i = 0;i<secretBase64.length;i++){
+        for(int i = 0;i<secretBase64.length;i++){
             byte [] x = {secretBase64[i]};
             out.println("blocco di segreto"+i+": "+new BigInteger(x));
-        }*/
+        }
 
         Map<BigInteger, ArrayList<byte[]>> mapN = new TreeMap<BigInteger, ArrayList<byte[]>>();
-<<<<<<< HEAD
+
         
         out.println("\nDimensione in byte : " + secret.length);
         out.println("\nDimensione in base 64 : " + secretBase64.length);
-=======
-      
->>>>>>> f47e93318aa28320a5d32466fca937a8958a7433
+
         
         byte[] block;
         ArrayList<BigInteger> a = this.randomCoeffList();; // lista coefficienti
         out.println("a coeff : "+a);
         ArrayList<byte[]> blockList;
-<<<<<<< HEAD
+
         int resto = secretBase64.length % this.blocksize;
-        
         out.println("\nNumer Blocchi da splittare : " + secretBase64.length / this.blocksize);
         out.println("\nResto del blocco : "+resto);
         out.println("\nSplit dei blocchi...");
         
-=======
-        ArrayList<BigInteger> a = new ArrayList<BigInteger>();
-
-        for (int i = 0; i < this.k - 1; i++) {   // scelgo coefficienti random in Zp
-            BigInteger ai = this.randomZp(this.primeN) ;
-            a.add(ai);
-            if(this.primeN.compareTo(ai)!=1){
-                     }
-        }
         
-        int resto = secretBase64.length % this.blocksize;
- 
->>>>>>> f47e93318aa28320a5d32466fca937a8958a7433
-       
+     
+        
         int j = 0;
         for (int i = 0; i < secretBase64.length / this.blocksize; i++) { // scorro tutti i blocchi
 
             j = this.blocksize * i;  // indice del blocco
             
             block = Arrays.copyOfRange(secretBase64, j, j + this.blocksize); // da indice del blocco al successivo
-<<<<<<< HEAD
             out.println("Size del blocco : "+block.length +" Indice blocco : "+i);
             out.println("blocco : "+new BigInteger(block));
-=======
-           
->>>>>>> f47e93318aa28320a5d32466fca937a8958a7433
+
             ArrayList<BigInteger> sbi = this.splitBlock(block, a);
-      //      out.println("Sbi:  "+sbi+"\n");
+            out.println("Sbi:  "+sbi+"\n");
             this.concShareToMap(sbi, mapN);
-            
             
         }
         
         if(resto!=0){ //se rimane qualche blocco
             
             block = Arrays.copyOfRange(secretBase64, (secretBase64.length-resto), secretBase64.length);
-<<<<<<< HEAD
             out.println("Size del blocco : "+block.length);  
-=======
->>>>>>> f47e93318aa28320a5d32466fca937a8958a7433
             ArrayList<BigInteger> sbi = this.splitBlock(block, a);
             out.println("Sbi:  "+sbi+"\n");
             this.concShareToMap(sbi, mapN);
@@ -134,33 +113,22 @@ public class SecretSharing {
         
          ArrayList blockList;
          
-<<<<<<< HEAD
-       //  out.println("-----------");
-=======
-         
->>>>>>> f47e93318aa28320a5d32466fca937a8958a7433
-        
         for (int n = 1; n < sbi.size() + 1; n++) {
                  
                  byte[] value = sbi.get(n - 1).toByteArray(); 
                 
                  
                  if (!mapN.containsKey(BigInteger.valueOf(n))) {  // se la mappa non lo contiene
-<<<<<<< HEAD
+
             //        out.println("Inserisco per la prima volta ad N : "+BigInteger.valueOf(n) + " "+new BigInteger(value));              
-=======
-                    
->>>>>>> f47e93318aa28320a5d32466fca937a8958a7433
+
                     blockList = new ArrayList<byte[]>();
                     blockList.add(value);
                     mapN.put(BigInteger.valueOf(n), blockList);  // inseriscilo
 
                 } else {
-<<<<<<< HEAD
           //          out.println("Inserisco ad N : "+BigInteger.valueOf(n)+ " "+new BigInteger(value));
-=======
-                  
->>>>>>> f47e93318aa28320a5d32466fca937a8958a7433
+
                     blockList = (ArrayList<byte[]>) mapN.get(BigInteger.valueOf(n));
                     blockList.add(value);
                     mapN.replace(BigInteger.valueOf(n), blockList); //concatena vc al nuovo ed inseriscilo
@@ -168,11 +136,8 @@ public class SecretSharing {
                 }
                  
              }
-<<<<<<< HEAD
       //  out.println("-----------");
         
-=======
->>>>>>> f47e93318aa28320a5d32466fca937a8958a7433
         
     }
     

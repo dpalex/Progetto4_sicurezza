@@ -28,7 +28,7 @@ public class SecretSharing {
     private int n;
     private int CERTAINTY = 50;
     private int modLength; // n bit del p 
-    private BigInteger primeN = new BigInteger("277");
+    private BigInteger primeN ;//= new BigInteger("277");
     private int blocksize; //in byte 
 
     public SecretSharing(int k, int n, int blocksize) {
@@ -42,10 +42,10 @@ public class SecretSharing {
         BigInteger two = new BigInteger("2");
         BigInteger maxNumberBlock = (two.pow(8 * this.blocksize)); // 2 ^ n° bit
 
-      /* while (prime.compareTo(maxNumberBlock) != 1) {
+       while (prime.compareTo(maxNumberBlock) != 1) {
             prime = this.genPrime();
         }
-        this.primeN = prime; */
+        this.primeN = prime; 
 
         out.println("Primo generato : " + this.primeN);
 

@@ -49,7 +49,6 @@ public class Client implements Serializable {
             this.macMapping = tmp.macMapping;
             this.nameMapping = tmp.nameMapping;
             this.shamirScheme = tmp.shamirScheme;
-            this.macResults=tmp.macResults;
         }
     }
 
@@ -70,7 +69,7 @@ public class Client implements Serializable {
         Map<BigInteger, ArrayList<byte[]>> shares = this.shamirScheme.split(file);
         applyMac(name, file, shares);
         //aggiorno il value associato al nome tramite il metodo distribuite
-        this.distribuite(name, shares);
+        this.distribuite(name,shares);
         File f = new File(path.toString() + name);
         f.delete();
     }
@@ -145,7 +144,7 @@ public class Client implements Serializable {
         this.macMapping.remove(name);
 
     }
-
+        
     private Map<BigInteger, ArrayList<byte[]>> getAllParts(String name) throws IOException, FileNotFoundException, ClassNotFoundException {
         //preparo la mappatura server-Arraylist contente gli n-split del segreto
         Map<BigInteger, ArrayList<byte[]>> fileMap = new HashMap<BigInteger, ArrayList<byte[]>>();
@@ -168,7 +167,7 @@ public class Client implements Serializable {
         byte[] downloadFile = this.shamirScheme.getSecret(fileMap);
         this.checkFinalIntegrity(name, downloadFile);
         Utility.writeFile(download + name, downloadFile);
-        String finalMac = this.macResults.get(name).get(String.valueOf(0));
+        String finalMac=this.macResults.get(name).get(String.valueOf(0));
         this.macResults.remove(name);
         return finalMac;
     }
@@ -195,10 +194,6 @@ public class Client implements Serializable {
     }
 
     public void SaveSession() throws IOException, FileNotFoundException, ClassNotFoundException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-        
-        for (Map.Entry<String, HashMap<BigInteger, String>> s : this.nameMapping.entrySet()) {
-             this.checkAllIntegrity(s.getKey());
-         }
         Utility.saveSession(this, this.id);
     }
 

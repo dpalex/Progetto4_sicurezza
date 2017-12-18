@@ -40,12 +40,11 @@ public class Progetto4 {
 
     public static void menu(String id, boolean session) throws IOException, NoSuchAlgorithmException, InvalidKeyException, FileNotFoundException, ClassNotFoundException, InvalidKeySpecException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
         Client client = new Client(id, session);
-        
         client.setShamirScheme(2,7,256);
         Scanner scanner = new Scanner(System.in);
         boolean enter = true;
         while (enter) {
-            System.out.print("\nSharing-Service: \n[1]Upload file\n[2]Download file\n[3]Visualizza file presenti sul server\n[4]Visualizza integrità file\n[5]Refresh directory\n[6]Salva sessione\n[7]Esci\n\nScelta: ");
+            System.out.print("\nSharing-Service: \n[1]Upload file\n[2]Download file\n[3]Visualizza file presenti sul server\n[4]Visualizza integrità file\n[5]Refrash directory\n[6]Esci\n\nScelta: ");
             int choice = scanner.nextInt();
             if (choice == 1) {
                 JFileChooser fileChooser = new JFileChooser();
@@ -116,12 +115,8 @@ public class Progetto4 {
                 //client.SaveSession();
                
             }
-                else if(choice==6){
-                 client.SaveSession();
-                 enter=false;
-            }
-                else{
-                      String[] files = Utility.getPathFiles("Download");
+            else{
+                    String[] files = Utility.getPathFiles("Download");
                 Path currentRelativePath = Paths.get("src/progetto4");
                 String repo = currentRelativePath.toAbsolutePath().toString() + "/Repo/";
                 for (String s : files) {
@@ -134,7 +129,7 @@ public class Progetto4 {
                     Utility.removeDirectory(f);
                 }
                  enter = false;
-                }
+            }
         }
 
     }

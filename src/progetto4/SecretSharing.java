@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
+import java.util.zip.DataFormatException;
 import java.util.zip.GZIPOutputStream;
 
 /**
@@ -25,14 +26,14 @@ public class SecretSharing {
     private int modLength; // n bit del p 
     private BigInteger primeN;
     private int blocksize; //in byte 
-    private boolean debug = false;  //abilito stampe di debug 
+    private boolean debug = true;  //abilito stampe di debug 
 
     public SecretSharing(int k, int n, int blocksize) {
 
         this.k = k;
         this.n = n;
         this.blocksize = blocksize;
-        this.modLength = 8 * blocksize;
+        this.modLength = 8 * blocksize + 1;
 
         BigInteger prime = this.genPrime();
         BigInteger two = new BigInteger("2");
@@ -53,12 +54,17 @@ public class SecretSharing {
         if (debug) {
             out.println("\nConversione Base64...");
         }
-        byte[] secretBase64 = Base64.getEncoder().encode(secret);
+        
+        byte[] compressData = Utility.compress(secret);
+        byte[] secretBase64 = Base64.getEncoder().encode(compressData);
 
         Map<BigInteger, ArrayList<byte[]>> mapN = new TreeMap<BigInteger, ArrayList<byte[]>>();
 
         if (debug) {
-            out.println("\nDimensione in byte : " + secret.length);
+            out.println("\nDimensione file : " + secret.length);
+        }
+        if (debug) {
+            out.println("\nDimensione file compresso : " + compressData.length);
         }
         if (debug) {
             out.println("\nDimensione in base 64 : " + secretBase64.length);
@@ -105,7 +111,7 @@ public class SecretSharing {
         return mapN;
     }
     
-    public byte[] getSecret(Map<BigInteger, ArrayList<byte[]>> Kp) throws IOException {
+    public byte[] getSecret(Map<BigInteger, ArrayList<byte[]>> Kp) throws IOException, DataFormatException {
 
         BigInteger result = BigInteger.ZERO;
         byte[] secretFinal = null;
@@ -157,15 +163,16 @@ public class SecretSharing {
                 result = BigInteger.ZERO; //riazzero 
 
             }  //qui si chiude il for dei blocchi
-
-            return Base64.getDecoder().decode(secretFinal);
+            
+            return Utility.decompress(Base64.getDecoder().decode(secretFinal));
+            
         } else {
             out.println("\n***** Errore blocchi ricevuti minori di k : " + Kp.size() + " < " + this.k);
             return null;
         }
 
     }
-
+    
     private void concShareToMap(ArrayList<BigInteger> sbi, Map mapN) {
 
         ArrayList blockList;
@@ -270,5 +277,7 @@ public class SecretSharing {
         return a.modInverse(this.primeN);
 
     }
+    
+    
 
 }

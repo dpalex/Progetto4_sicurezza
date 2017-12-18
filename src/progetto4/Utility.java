@@ -233,7 +233,7 @@ public class Utility implements Serializable {
     }
 
     public static byte[] compress(byte[] data) throws IOException {
-        Deflater deflater = new Deflater(Deflater.HUFFMAN_ONLY);
+        Deflater deflater = new Deflater(Deflater.BEST_COMPRESSION);
         deflater.setInput(data);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);

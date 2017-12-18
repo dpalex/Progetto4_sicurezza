@@ -33,12 +33,12 @@ public class testenco {
      */
     public static void main(String[] args) throws IOException, DataFormatException {
 
-        byte[] data  = new byte[1000];//Utility.loadFile("/Users/f.did/Desktop/JPEG_20160830_195147_115183616.jpg");
-        //Random r = new SecureRandom();// ; //{52,123,111,-45};//
-        //r.nextBytes(data);
+        byte[] data  = new byte[5000];//Utility.loadFile("/Users/f.did/Desktop/JPEG_20160830_195147_115183616.jpg");
+        Random r = new SecureRandom();// ; //{52,123,111,-45};//
+        r.nextBytes(data);
        // BigInteger dB = new BigInteger(data);
         
-         SecretSharing sh = new SecretSharing(3,15,32);
+         SecretSharing sh = new SecretSharing(3,12,256);
         //        out.println("\nSegreto : "+dB+"\n");
         
        Map<BigInteger, ArrayList<byte[]>> shareMap = sh.split(data);
@@ -72,6 +72,7 @@ public class testenco {
          for(BigInteger k2 :shareMap.keySet()){
              
               for(BigInteger k3 :shareMap.keySet()){
+                  
              if(k.compareTo(k2)!=0 && k.compareTo(k3)!=0 && k2.compareTo(k3)!=0 ){
                  out.println("Ricostruisco con : "+ k + " - "+k2+ " - "+k3);
                  rMap.put(k2, shareMap.get(k2));

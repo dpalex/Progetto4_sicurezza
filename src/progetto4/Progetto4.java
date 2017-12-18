@@ -8,12 +8,14 @@ package progetto4;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -31,18 +33,18 @@ public class Progetto4 {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws IOException, NoSuchAlgorithmException, InvalidKeyException, FileNotFoundException, ClassNotFoundException, InvalidKeySpecException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
-        
-        menu("giovanni",false);
-        
+
+        menu("giovanni", false);
+
     }
 
-    public static void menu(String id,boolean session) throws IOException, NoSuchAlgorithmException, InvalidKeyException, FileNotFoundException, ClassNotFoundException, InvalidKeySpecException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
-        Client client = new Client(id,session);
-        client.setShamirScheme(3, 5, 128);
+    public static void menu(String id, boolean session) throws IOException, NoSuchAlgorithmException, InvalidKeyException, FileNotFoundException, ClassNotFoundException, InvalidKeySpecException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
+        Client client = new Client(id, session);
+        client.setShamirScheme(3,7,256);
         Scanner scanner = new Scanner(System.in);
         boolean enter = true;
         while (enter) {
-            System.out.print("\nSharing-Service: \n[1]Upload file\n[2]Download file\n[3]Visualizza file presenti sul server\n[4]Esci\n\nScelta: ");
+            System.out.print("\nSharing-Service: \n[1]Upload file\n[2]Download file\n[3]Visualizza file presenti sul server\n[4]Visualizza integrità file\n[5]Refrash directory\n[6]Esci\n\nScelta: ");
             int choice = scanner.nextInt();
             if (choice == 1) {
                 JFileChooser fileChooser = new JFileChooser();
@@ -57,22 +59,16 @@ public class Progetto4 {
                     }
                     System.out.print("\nScelta: ");
                     int scelta = scanner.nextInt();
-                    System.out.println("\nServer online per il file [ " + client.getNameFilesOnline().get(scelta) + " ] :");
+                    String nameFile= client.getNameFilesOnline().get(scelta);
+                    System.out.println("\nServer online per il file [ " + nameFile + " ] :");
+                    
                     ArrayList<String> servers = client.getServerOnline(client.getNameFilesOnline().get(scelta));
-                    for (String s : servers) {
-                        System.out.println("Server " + s);
-                    }
+
                     System.out.println("\nDownload in corso...");
-
+                    String result=client.download(client.getNameFilesOnline().get(scelta));
+                    System.out.println("Verifica Mac del file: "+result);
                     System.out.println("\nFile salvato nella directory Download");
-                    System.out.println("Verifica Mac del file: ");
-                    ArrayList<String> checks=client.download(client.getNameFilesOnline().get(scelta));
-                    for(int i=0;i<checks.size()-1;i++){
-                       System.out.println("Server "+(i+1)+": "+checks.get(i)); 
-                    }
-                    System.out.println("File Original: "+checks.get(checks.size()-1)); 
-
-
+                    
                 } else {
                     System.out.println("\nNessun file sui server per il download! ");
                 }
@@ -82,17 +78,34 @@ public class Progetto4 {
                     System.out.println("\nFile presenti sui server per il download: ");
                     for (int i = 0; i < client.getNameFilesOnline().size(); i++) {
                         System.out.println(client.getNameFilesOnline().get(i));
+                        
                     }
-                }else {
+                } else {
                     System.out.println("\nNessun file sui server per il download! ");
                 }
-            } else {
+            } else if(choice==4){
+                if (client.getNameFilesOnline().size() != 0) {
+                    System.out.println("\nFile presenti sui server: ");
+                    for (int i = 0; i < client.getNameFilesOnline().size(); i++) {
+                        String name=client.getNameFilesOnline().get(i);
+                        System.out.println("\nNome file: "+name+"   Lista Server: ");
+                        HashMap<String,String> checkMac=client.getStates(name);
+                        for(int j=1;j<(checkMac.size()+1);j++){
+                            System.out.println("Server ["+String.valueOf(j)+"] Integrità: "+checkMac.get(String.valueOf(j)));
+                        }
+                    }
+                } else {
+                    System.out.println("\nNessun file sui server");
+                }
+                
+            }
+                else if(choice==5){
                 String[] files = Utility.getPathFiles("Download");
                 Path currentRelativePath = Paths.get("src/progetto4");
                 String repo = currentRelativePath.toAbsolutePath().toString() + "/Repo/";
                 for (String s : files) {
                     File f = new File(s);
-                    f.renameTo(new File(repo+Utility.nameFile(s)));
+                    f.renameTo(new File(repo + Utility.nameFile(s)));
                 }
                 String[] folders = Utility.getPathFiles("Servers");
                 for (String s : folders) {
@@ -100,7 +113,22 @@ public class Progetto4 {
                     Utility.removeDirectory(f);
                 }
                 //client.SaveSession();
-                enter = false;
+               
+            }
+            else{
+                    String[] files = Utility.getPathFiles("Download");
+                Path currentRelativePath = Paths.get("src/progetto4");
+                String repo = currentRelativePath.toAbsolutePath().toString() + "/Repo/";
+                for (String s : files) {
+                    File f = new File(s);
+                    f.renameTo(new File(repo + Utility.nameFile(s)));
+                }
+                String[] folders = Utility.getPathFiles("Servers");
+                for (String s : folders) {
+                    File f = new File(s);
+                    Utility.removeDirectory(f);
+                }
+                 enter = false;
             }
         }
 

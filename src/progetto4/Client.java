@@ -18,7 +18,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -70,7 +69,7 @@ public class Client implements Serializable {
         Map<BigInteger, ArrayList<byte[]>> shares = this.shamirScheme.split(file);
         applyMac(name, file, shares);
         //aggiorno il value associato al nome tramite il metodo distribuite
-        this.nameMapping.put(name, this.distribuite(shares));
+        this.distribuite(name,shares);
         File f = new File(path.toString() + name);
         f.delete();
     }
@@ -90,7 +89,7 @@ public class Client implements Serializable {
         this.macResults.put(name, new HashMap<String, String>());
     }
 
-    private HashMap<BigInteger, String> distribuite(Map<BigInteger, ArrayList<byte[]>> shares) throws IOException {
+    private void distribuite(String name, Map<BigInteger, ArrayList<byte[]>> shares) throws IOException {
         //preparo la mappa per server-nome del file associato
         HashMap<BigInteger, String> tmp = new HashMap<BigInteger, String>();
         //creo gli n server come cartelle e inserisco i file
@@ -114,10 +113,10 @@ public class Client implements Serializable {
             //salvo la mappatura tra nome file e server i-esimo
             tmp.put(s.getKey(), fileName);
         }
-        return tmp;
+        this.nameMapping.put(name, tmp);
     }
 
-    public void checkMacAllServers(String name) throws NoSuchAlgorithmException, InvalidKeyException, IOException, FileNotFoundException, ClassNotFoundException {
+    private void checkAllIntegrity(String name) throws NoSuchAlgorithmException, InvalidKeyException, IOException, FileNotFoundException, ClassNotFoundException {
         Map<BigInteger, ArrayList<byte[]>> received = this.getAllParts(name);
         byte[] sKEnc = this.macMapping.get(name).get(0);
         SecretKey sK = new SecretKeySpec(sKEnc, 0, sKEnc.length, "HmacSHA256");
@@ -132,7 +131,7 @@ public class Client implements Serializable {
 
     }
 
-    public void checkMac(String name, byte[] file) throws NoSuchAlgorithmException, InvalidKeyException, IOException, FileNotFoundException, ClassNotFoundException {
+    private void checkFinalIntegrity(String name, byte[] file) throws NoSuchAlgorithmException, InvalidKeyException, IOException, FileNotFoundException, ClassNotFoundException {
         Map<BigInteger, ArrayList<byte[]>> received = this.getAllParts(name);
         byte[] sKEnc = this.macMapping.get(name).get(0);
         SecretKey sK = new SecretKeySpec(sKEnc, 0, sKEnc.length, "HmacSHA256");
@@ -145,7 +144,7 @@ public class Client implements Serializable {
         this.macMapping.remove(name);
 
     }
-
+        
     private Map<BigInteger, ArrayList<byte[]>> getAllParts(String name) throws IOException, FileNotFoundException, ClassNotFoundException {
         //preparo la mappatura server-Arraylist contente gli n-split del segreto
         Map<BigInteger, ArrayList<byte[]>> fileMap = new HashMap<BigInteger, ArrayList<byte[]>>();
@@ -160,16 +159,17 @@ public class Client implements Serializable {
     }
 
     public String download(String name) throws IOException, FileNotFoundException, ClassNotFoundException, NoSuchAlgorithmException, InvalidKeyException {
-
         Map<BigInteger, ArrayList<byte[]>> fileMap = getAllParts(name);
         //utilizzo l'interpolazione in f0 in shamirScheme passandogli gli n-split associati al server
         //ritorno il contenuto del segreto
         Path currentRelativePath = Paths.get("src/progetto4");
         String download = currentRelativePath.toAbsolutePath().toString() + "/Download/";
         byte[] downloadFile = this.shamirScheme.getSecret(fileMap);
-        this.checkMac(name, downloadFile);
+        this.checkFinalIntegrity(name, downloadFile);
         Utility.writeFile(download + name, downloadFile);
-        return this.macResults.get(name).get(String.valueOf(0));
+        String finalMac=this.macResults.get(name).get(String.valueOf(0));
+        this.macResults.remove(name);
+        return finalMac;
     }
 
     public ArrayList<String> getNameFilesOnline() {
@@ -189,7 +189,7 @@ public class Client implements Serializable {
     }
 
     public HashMap<String, String> getStates(String nameFile) throws IOException, FileNotFoundException, ClassNotFoundException, NoSuchAlgorithmException, InvalidKeyException {
-        this.checkMacAllServers(nameFile);
+        this.checkAllIntegrity(nameFile);
         return this.macResults.get(nameFile);
     }
 

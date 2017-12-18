@@ -40,7 +40,7 @@ public class Progetto4 {
 
     public static void menu(String id, boolean session) throws IOException, NoSuchAlgorithmException, InvalidKeyException, FileNotFoundException, ClassNotFoundException, InvalidKeySpecException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
         Client client = new Client(id, session);
-        client.setShamirScheme(3,7,32);
+        client.setShamirScheme(2,7,256);
         Scanner scanner = new Scanner(System.in);
         boolean enter = true;
         while (enter) {

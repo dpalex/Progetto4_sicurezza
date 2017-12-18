@@ -204,19 +204,20 @@ public class SecretSharing {
                         if (!idcurrent.equals(id)) {
                             //out.println("Risolvo : "+idcurrent +" - "+id); 
                             den = den.multiply(id.subtract(idcurrent));
-                            if(invModMap.containsKey(den)){  // se ho già calcolato
-                                 valueID = (valueID.multiply(id)).multiply(invModMap.get(den));
+                            valueID = valueID.multiply(id);
+                            
+                        }
+                        
+                    }
+                    if(invModMap.containsKey(den)){  // se ho già calcolato
+                                 valueID = (valueID).multiply(invModMap.get(den));
                             }else{
                                 out.println("\nComputo modulo inverso...");
                                 BigInteger minv = this.mInv(den);
                                 out.println("Fine computazione...");
                                 invModMap.put(den, minv);
-                                 valueID = (valueID.multiply(id)).multiply(minv);
+                                 valueID = (valueID).multiply(minv);
                             }
-                            
-                        }
-                        
-                    }
             
                     if (tmp == null) {
                         tmp = (valueID);

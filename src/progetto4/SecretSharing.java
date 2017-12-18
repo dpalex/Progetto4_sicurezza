@@ -31,16 +31,16 @@ public class SecretSharing {
         this.k = k;
         this.n = n;
         this.blocksize = blocksize;
-        this.modLength = 8 * blocksize + this.n;
+       this.modLength = 8 * blocksize;
 
         BigInteger prime = this.genPrime();
         BigInteger two = new BigInteger("2");
         BigInteger maxNumberBlock = (two.pow(8 * this.blocksize)); // 2 ^ n° bit
 
-       while (prime.compareTo(maxNumberBlock) != 1) {
+       while (prime.compareTo(maxNumberBlock.divide(two)) != 1) {
             prime = this.genPrime();
         }
-        this.primeN = prime; 
+        this.primeN = prime;
         out.println("Primo generato : " + this.primeN);
 
     }
@@ -60,9 +60,9 @@ public class SecretSharing {
         out.println("\nDimensione in base 64 : " + secretBase64.length);
         
         byte[] block;
-        ArrayList<BigInteger> a=  this.randomCoeffList();
+        ArrayList<BigInteger> a;//=  this.randomCoeffList();
         //    out.println("a : "+a.get(0));; // lista coefficienti
-        out.println("a coeff : "+a);
+     
         ArrayList<byte[]> blockList;
         int resto = secretBase64.length % this.blocksize;
         
@@ -79,7 +79,7 @@ public class SecretSharing {
             block = Arrays.copyOfRange(secretBase64, j, j + this.blocksize); // da indice del blocco al successivo
          //   out.println("Size del blocco : "+block.length +" Indice blocco : "+i);
         //    out.println("blocco : "+new BigInteger(block));
-         //   a = this.randomCoeffList();
+            a = this.randomCoeffList();
          //   out.println("a : "+a.get(0));
             ArrayList<BigInteger> sbi = this.splitBlock(block, a);
         //    out.println("Sbi:  "+sbi+"\n");
@@ -93,7 +93,7 @@ public class SecretSharing {
             out.println("elaboro resto : "+resto);
             block = Arrays.copyOfRange(secretBase64, (secretBase64.length-resto), secretBase64.length);
        //     out.println("Size del blocco : "+block.length); 
-        //    a = this.randomCoeffList();
+            a = this.randomCoeffList();
         //    out.println("a : "+a.get(0));
             ArrayList<BigInteger> sbi = this.splitBlock(block, a);
        //     out.println("Sbi:  "+sbi+"\n");
@@ -168,7 +168,7 @@ public class SecretSharing {
 
             for (int nExp = 1; nExp < this.k; nExp++) {  //indice dell'esponente
 
-                tmp = tmp.add((a.get(nExp - 1).multiply(x.pow(nExp)))).mod(this.primeN); //a(nExp-1)*x^nExp addizionati ad S inizale
+                tmp = tmp.add((a.get(nExp - 1).multiply(x.pow(nExp)))); //a(nExp-1)*x^nExp addizionati ad S inizale
             }
 
             RP.add(tmp.mod(prime)); // polinomio
@@ -182,8 +182,6 @@ public class SecretSharing {
        
         BigInteger tmp = null ;
         byte[] secretFinal = null;
-        ArrayList<BigInteger> nomList;
-        ArrayList<BigInteger> denList;
 
         if (Kp.size() >= this.k) {
 
@@ -193,9 +191,7 @@ public class SecretSharing {
          //   out.println("\nNumero di K usati : " + idList.size());
          
             for (int i = 0; i < Kp.get(idList.get(0)).size(); i++) {    // itero i blocchi
-                
-                nomList = new ArrayList<BigInteger>();
-                denList = new ArrayList<BigInteger>();
+         
           
                 for (BigInteger idcurrent : idList) {  //id corrente dal set di ID   
                     
@@ -209,35 +205,25 @@ public class SecretSharing {
                         
                         if (!idcurrent.equals(id)) {
                             //out.println("Risolvo : "+idcurrent +" - "+id); 
-                            
                             den = den.multiply(id.subtract(idcurrent));
-              //              out.println("den "+den);
-                           if(id.compareTo(idcurrent)!=1){ //se negativo
-                                valueID = valueID.negate().mod(this.primeN);
-                                den = den.negate();
-                 //               out.println("negativo ! ora valued ID vale:  "+valueID);
-                            }
-                           valueID = valueID.multiply(id).mod(this.primeN);
+                            valueID = (valueID.multiply(id)).multiply(this.mInv(den));
+              //              out.println("den "+den);                     
                              
                         }
                         
                     }
-                    nomList.add(valueID);
-                    denList.add(den);
             
-                    /*if (tmp == null) {
-                        tmp = (valueID.divide(den)).mod(this.primeN);
+                    if (tmp == null) {
+                        tmp = (valueID);
                     } else {
-                        tmp = tmp.add((valueID.divide(den)).mod(this.primeN));
-                    }*/
+                        tmp = tmp.add((valueID));
+                    }
              //       out.println("tmp vale : "+tmp);
 
                 }
-          //      out.println("Blocco processato numero : "+i);
-         //       out.println(nomList +" \n"+denList);
-                tmp = this.computeBlock(nomList, denList);
-          //      out.println("Blocco ricostruito n"+i+" : "+tmp+"\n");
-         //       out.println("Risolto primo blocco, risultato : "+tmp);
+                
+                tmp = tmp.mod(this.primeN);
+          //      
                 
                 if (secretFinal == null) {
                     secretFinal = tmp.toByteArray();
@@ -293,6 +279,21 @@ public class SecretSharing {
         return (result.divide(lcm)).mod(this.primeN);
         
 
+        
+    }
+    
+    private BigInteger mInv(BigInteger a){
+        
+        BigInteger modInv = BigInteger.ZERO;
+        
+       for(BigInteger x = BigInteger.ZERO;x.compareTo(this.primeN)!=1;x = x.add(BigInteger.ONE)){
+           modInv= (a.multiply(x)).mod(this.primeN);
+           if((  modInv).compareTo(BigInteger.ONE) == 0 ){
+               return x;
+           }
+       }
+        
+        return BigInteger.ONE;
         
     }
             

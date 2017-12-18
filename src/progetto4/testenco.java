@@ -33,13 +33,13 @@ public class testenco {
      */
     public static void main(String[] args) throws IOException, DataFormatException {
 
-        byte[] data  = new byte[100000];//= Utility.loadFile("/Users/f.did/Desktop/JPEG_20160830_195147_115183616.jpg");
-        Random r = new SecureRandom();// ; //{52,123,111,-45};//
-        r.nextBytes(data);
-        BigInteger dB = new BigInteger(data);
+        byte[] data  = Utility.loadFile("/Users/f.did/Desktop/JPEG_20160830_195147_115183616.jpg");
+        //Random r = new SecureRandom();// ; //{52,123,111,-45};//
+        //r.nextBytes(data);
+       // BigInteger dB = new BigInteger(data);
         
-         SecretSharing sh = new SecretSharing(3,5,256);
-                out.println("\nSegreto : "+dB+"\n");
+         SecretSharing sh = new SecretSharing(2,5,256);
+        //        out.println("\nSegreto : "+dB+"\n");
         
        Map<BigInteger, ArrayList<byte[]>> shareMap = sh.split(data);
        Map<BigInteger, ArrayList<byte[]>> rMap =  new TreeMap<BigInteger, ArrayList<byte[]>>();
@@ -47,7 +47,7 @@ public class testenco {
 
      //   out.println("Segreto : "+dB);
        
-    /*  for(BigInteger k :shareMap.keySet()){
+      for(BigInteger k :shareMap.keySet()){
            if(k.compareTo(BigInteger.valueOf(400))!=0){
            rMap.put(k, shareMap.get(k));
          for(BigInteger k2 :shareMap.keySet()){
@@ -57,16 +57,16 @@ public class testenco {
                  byte [] file = sh.getSecret(rMap);
                  boolean b = Arrays.equals(file, data);
                  out.println(k+" - "+k2+" - |"+b+"|            ");
-                 Utility.writeFile("/Users/f.did/Desktop/test/prova_"+k+"_"+k2+".jpg", file); 
+                Utility.writeFile("/Users/f.did/Desktop/test/prova_"+k+"_"+k2+".jpg", file); 
                  rMap.remove(k2);
              }
                       }
          rMap.clear();
            }
-       } */
+       } 
 
         
-       
+       /*
        for(BigInteger k :shareMap.keySet()){
            rMap.put(k, shareMap.get(k));
          for(BigInteger k2 :shareMap.keySet()){
@@ -89,7 +89,7 @@ public class testenco {
          }
          rMap.clear();
            
-       }
+       }*/
     
 
 

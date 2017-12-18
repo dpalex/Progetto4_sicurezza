@@ -20,20 +20,43 @@ public class TestBB {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-           BigInteger x = BigInteger.valueOf(3);
-     BigInteger y = BigInteger.valueOf(5);
-     BigInteger k = BigInteger.valueOf(15);
-     BigInteger q = BigInteger.valueOf(6);
-     ArrayList<BigInteger> l = new ArrayList<BigInteger> ();
-     l.add(x);
-     l.add(y);
-     l.add(k);
-     l.add(q);
+
+     /*BigInteger x = BigInteger.valueOf(56/3);
+     BigInteger y = BigInteger.valueOf(221);
      BigInteger mod = BigInteger.valueOf(277);
-     out.println(Utility.lcm(l));
+     out.println(x);
+     out.println(x.modInverse(mod));
+     out.println(y.modInverse(mod));*/
+     
+     int modinv2=0;
+     
+     for(int x =0 ;x<277;x++){
+         if( Math.floorMod(-3*x,277 )==1){
+             modinv2=x;
+             break;
+         }
+     }
+     out.println(modinv2);
+     
+    
+      BigInteger a = BigInteger.valueOf(-3);
+        BigInteger modInv = BigInteger.valueOf(-3).modInverse(BigInteger.valueOf(277));
+   /*     
+       for(BigInteger x = BigInteger.ZERO;x.compareTo(BigInteger.valueOf(277))!=1;x = x.add(BigInteger.ONE)){
+           modInv= (a.multiply(x)).mod( BigInteger.valueOf(277)  );
+           if(  modInv.compareTo(BigInteger.ONE) == 0 ){
+              modInv = x ;
+              break;
+           }
+       }
+       */
+       out.println(modInv);
+
+     
+     
 
   /*  x = x.mod(mod);
-    out.println(x);
+    
  
     y = y.mod(mod);
        out.println(y);

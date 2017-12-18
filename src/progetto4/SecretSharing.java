@@ -179,20 +179,18 @@ public class SecretSharing {
 
     public byte[] getSecret(Map<BigInteger, ArrayList<byte[]>> Kp) throws IOException {
 
-       
         BigInteger tmp = null ;
         byte[] secretFinal = null;
+        Map<BigInteger,BigInteger>  invModMap = new TreeMap<BigInteger,BigInteger>();
 
         if (Kp.size() >= this.k) {
 
             List<BigInteger> idList = new ArrayList<BigInteger>(Kp.keySet()); // set degli ID
-         //   out.println("\nID Ricevuti : " + idList);
+
             idList = idList.subList(0, this.k);  // prendo i K che mi servono
-         //   out.println("\nNumero di K usati : " + idList.size());
-         
+
             for (int i = 0; i < Kp.get(idList.get(0)).size(); i++) {    // itero i blocchi
          
-          
                 for (BigInteger idcurrent : idList) {  //id corrente dal set di ID   
                     
                    // out.println("idcurrent "+idcurrent);                
@@ -206,9 +204,16 @@ public class SecretSharing {
                         if (!idcurrent.equals(id)) {
                             //out.println("Risolvo : "+idcurrent +" - "+id); 
                             den = den.multiply(id.subtract(idcurrent));
-                            valueID = (valueID.multiply(id)).multiply(this.mInv(den));
-              //              out.println("den "+den);                     
-                             
+                            if(invModMap.containsKey(den)){  // se ho già calcolato
+                                 valueID = (valueID.multiply(id)).multiply(invModMap.get(den));
+                            }else{
+                                out.println("\nComputo modulo inverso...");
+                                BigInteger minv = this.mInv(den);
+                                out.println("Fine computazione...");
+                                invModMap.put(den, minv);
+                                 valueID = (valueID.multiply(id)).multiply(minv);
+                            }
+                            
                         }
                         
                     }
@@ -218,12 +223,10 @@ public class SecretSharing {
                     } else {
                         tmp = tmp.add((valueID));
                     }
-             //       out.println("tmp vale : "+tmp);
 
                 }
                 
-                tmp = tmp.mod(this.primeN);
-          //      
+                tmp = tmp.mod(this.primeN);    
                 
                 if (secretFinal == null) {
                     secretFinal = tmp.toByteArray();
@@ -284,18 +287,10 @@ public class SecretSharing {
     
     private BigInteger mInv(BigInteger a){
         
-        BigInteger modInv = BigInteger.ZERO;
-        
-       for(BigInteger x = BigInteger.ZERO;x.compareTo(this.primeN)!=1;x = x.add(BigInteger.ONE)){
-           modInv= (a.multiply(x)).mod(this.primeN);
-           if((  modInv).compareTo(BigInteger.ONE) == 0 ){
-               return x;
-           }
-       }
-        
-        return BigInteger.ONE;
+       return a.modInverse(this.primeN);
         
     }
+    
             
     
     

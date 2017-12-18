@@ -38,9 +38,10 @@ public class TestBB {
      }
      out.println(modinv2);
      
-      BigInteger modInv = BigInteger.ZERO;
+    
       BigInteger a = BigInteger.valueOf(-3);
-        
+        BigInteger modInv = BigInteger.valueOf(-3).modInverse(BigInteger.valueOf(277));
+   /*     
        for(BigInteger x = BigInteger.ZERO;x.compareTo(BigInteger.valueOf(277))!=1;x = x.add(BigInteger.ONE)){
            modInv= (a.multiply(x)).mod( BigInteger.valueOf(277)  );
            if(  modInv.compareTo(BigInteger.ONE) == 0 ){
@@ -48,7 +49,7 @@ public class TestBB {
               break;
            }
        }
-       
+       */
        out.println(modInv);
 
      

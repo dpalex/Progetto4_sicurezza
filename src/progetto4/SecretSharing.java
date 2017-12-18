@@ -2,6 +2,7 @@ package progetto4;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import static java.lang.System.out;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ import java.util.zip.GZIPOutputStream;
  *
  * @author f.did
  */
-public class SecretSharing {
+public class SecretSharing implements Serializable {
 
     private int k;
     private int n;

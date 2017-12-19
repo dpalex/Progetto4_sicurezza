@@ -279,22 +279,15 @@ public class SecretSharing implements Serializable {
 
     }
 
-<<<<<<< HEAD
+
     public int[] getParameters(){
         int[] info=new int[3];
         info[0]=this.k;
         info[1]=this.n;
         info[2]=this.blocksize;
-=======
-    public int[] getInfo() {
-        int[] info = new int[3];
-        info[0] = this.k;
-        info[1] = this.n;
-        info[2] = this.blocksize;
->>>>>>> 6028d3b3e24340f08bd29398d443737255c38373
         return info;
     }
-
+  
 
     public BigInteger getPrime(){
         

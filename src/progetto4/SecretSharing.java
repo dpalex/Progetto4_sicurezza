@@ -27,7 +27,7 @@ public class SecretSharing implements Serializable {
     private int modLength; // n bit del p 
     private BigInteger primeN;
     private int blocksize; //in byte 
-    private boolean debug = true;  //abilito stampe di debug 
+    private boolean debug = false;  //abilito stampe di debug 
 
     public SecretSharing(int k, int n, int blocksize) {
 
@@ -55,7 +55,7 @@ public class SecretSharing implements Serializable {
         if (debug) {
             out.println("\nConversione Base64...");
         }
-        
+
         byte[] compressData = Utility.compress(secret);
         byte[] secretBase64 = Base64.getEncoder().encode(compressData);
 
@@ -111,7 +111,7 @@ public class SecretSharing implements Serializable {
 
         return mapN;
     }
-    
+
     public byte[] getSecret(Map<BigInteger, ArrayList<byte[]>> Kp) throws IOException, DataFormatException {
 
         BigInteger result = BigInteger.ZERO;
@@ -153,7 +153,7 @@ public class SecretSharing implements Serializable {
                     result = result.add((nom));
 
                 }// fine risoluzione del blocco
-                
+
                 result = result.mod(this.primeN); // calcolato la soluzione del blocco iesimo
 
                 if (secretFinal == null) {  // concateno alla soluzione finale
@@ -164,16 +164,16 @@ public class SecretSharing implements Serializable {
                 result = BigInteger.ZERO; //riazzero 
 
             }  //qui si chiude il for dei blocchi
-            
+
             return Utility.decompress(Base64.getDecoder().decode(secretFinal));
-            
+
         } else {
             out.println("\n***** Errore blocchi ricevuti minori di k : " + Kp.size() + " < " + this.k);
             return null;
         }
 
     }
-    
+
     private void concShareToMap(ArrayList<BigInteger> sbi, Map mapN) {
 
         ArrayList blockList;
@@ -278,13 +278,24 @@ public class SecretSharing implements Serializable {
         return a.modInverse(this.primeN);
 
     }
-    
-    public int[] getInfo(){
+
+    public int[] getParameters(){
         int[] info=new int[3];
         info[0]=this.k;
         info[1]=this.n;
         info[2]=this.blocksize;
         return info;
+    }
+
+
+    public BigInteger getPrime(){
+        
+        return this.primeN;
+    }
+    
+    public void setPrime(BigInteger prime){
+        
+        this.primeN = prime;
     }
 
 }

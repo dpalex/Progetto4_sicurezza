@@ -40,22 +40,22 @@ public class Client implements Serializable {
     public String id;
     private SecretSharing shamirScheme;
 
-    public Client(String id) throws ClassNotFoundException, IOException { 
-            Client tmp = Utility.loadSession(id);
-            if(tmp!=null){
+    public Client(String id) throws ClassNotFoundException, IOException {
+        Client tmp = Utility.loadSession(id);
+        if (tmp != null) {
             this.id = tmp.id;
             this.macMapping = tmp.macMapping;
             this.nameMapping = tmp.nameMapping;
             this.shamirScheme = tmp.shamirScheme;
-            }else{
-                this.id=id;
+        } else {
+            this.id = id;
         }
     }
 
     public void setShamirScheme(int k, int n, int blockSize) {
         this.shamirScheme = new SecretSharing(k, n, blockSize);
     }
-    
+
     public void upload(String name) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         Path currentRelativePath = Paths.get("src/progetto4");
         String path = currentRelativePath.toAbsolutePath().toString() + "/Repo/";
@@ -192,8 +192,8 @@ public class Client implements Serializable {
     public void SaveSession() throws IOException, FileNotFoundException, ClassNotFoundException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         Utility.saveSession(this, this.id);
     }
-    
-    public int[] getInfoScheme(){
+
+    public int[] getInfoScheme() {
         return this.shamirScheme.getInfo();
     }
 

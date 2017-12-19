@@ -5,7 +5,6 @@
  */
 package progetto4;
 
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -20,10 +19,7 @@ import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Serializable;
-import static java.lang.System.out;
-import java.lang.reflect.Array;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,12 +36,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 import java.util.Scanner;
 import java.util.TimeZone;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
-import java.util.zip.GZIPOutputStream;
 import java.util.zip.Inflater;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -70,7 +64,7 @@ public class Utility implements Serializable {
         byte[] data = Files.readAllBytes(path);
         return data;
     }
-
+    
     public static ArrayList<byte[]> loadArrayList(String sourcePath) throws FileNotFoundException, IOException, ClassNotFoundException {
         FileInputStream fis = new FileInputStream(sourcePath);
         ObjectInputStream ois = new ObjectInputStream(fis);
@@ -87,7 +81,7 @@ public class Utility implements Serializable {
 
     public static byte[] getByteArrayFromObject(ArrayList<byte[]> c) throws FileNotFoundException, IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutput out =  new ObjectOutputStream(bos);
+        ObjectOutput out = new ObjectOutputStream(bos);
         out.writeObject(c);
         byte[] tmp = bos.toByteArray();
         out.close();
@@ -271,7 +265,6 @@ public class Utility implements Serializable {
         return output;
     }
 
-
     public static BigInteger gcd(BigInteger a, BigInteger b) {
         if (a.compareTo(BigInteger.ZERO) == 0) {
             return b;
@@ -283,17 +276,15 @@ public class Utility implements Serializable {
         BigInteger m = a.multiply(b.divide(gcd(a, b)));
         return m;
     }
-    
-    public static BigInteger lcm(ArrayList<BigInteger> input)
-{
-    BigInteger result = input.get(0);
-    for(int i = 1; i < input.size(); i++) {
-        result = lcm(result, input.get(i));
+
+    public static BigInteger lcm(ArrayList<BigInteger> input) {
+        BigInteger result = input.get(0);
+        for (int i = 1; i < input.size(); i++) {
+            result = lcm(result, input.get(i));
+        }
+        return result;
     }
-    return result;
-}
-    
-    
+
     public static void saveSession(Client c, String id) throws FileNotFoundException, IOException, ClassNotFoundException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutput out = new ObjectOutputStream(bos);
@@ -308,17 +299,16 @@ public class Utility implements Serializable {
     public static Client loadSession(String id) throws ClassNotFoundException, IOException {
         Path currentRelativePath = Paths.get("src/progetto4");
         String clients = currentRelativePath.toAbsolutePath().toString() + "/Clients/";
-        File tmpfile = new File( clients.toString() + "/" + id);
-        Client tmp=null;
-            if (tmpfile.exists()) {
+        File tmpfile = new File(clients.toString() + "/" + id);
+        Client tmp = null;
+        if (tmpfile.exists()) {
             ByteArrayInputStream bis = new ByteArrayInputStream(loadFile(clients + id));
             ObjectInput in = null;
             in = new ObjectInputStream(bis);
             tmp = (Client) in.readObject();
-            }
+        }
         return tmp;
 
     }
-
 
 }

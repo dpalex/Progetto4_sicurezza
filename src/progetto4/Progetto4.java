@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package progetto4;
 
 import java.io.File;
@@ -24,15 +20,23 @@ import javax.swing.JOptionPane;
 
 public class Progetto4 {
 
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String[] args) throws IOException, NoSuchAlgorithmException, InvalidKeyException, FileNotFoundException, ClassNotFoundException, InvalidKeySpecException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, DataFormatException {
-
+        //menu di test
         menu();
-
     }
-
+    
+    /*
+    Metodo che presenta un menu per i servizi proposti, il menu permette di:
+    -Istanziare un client:
+        In caso questo esista già, viene caricata la sua ultima sessione
+        Se non è presente il client, viene chiesto di istanziare uno schema di shamir scegliendo i parametri
+    -Effettuare un upload
+    -Effettuare un download
+    -Visualizzare i file per cui si è già effetuato upload su server
+    -Verificare l'integrità di un file e i suoi shares presenti sui server online
+    -Resettare l'intera sessione, quindi cancellare tutti i file e tutti i server
+    -Salvare la sessione ed uscire
+    */
     public static void menu() throws IOException, NoSuchAlgorithmException, InvalidKeyException, FileNotFoundException, ClassNotFoundException, InvalidKeySpecException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, DataFormatException {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Inserisci id utente: ");
@@ -79,7 +83,6 @@ public class Progetto4 {
                 } else {
                     System.out.println("\nNessun file sui server per il download! ");
                 }
-
             } else if (choice == 3) {
                 if (client.getNameFilesOnline().size() != 0) {
                     System.out.println("\nFile presenti sui server per il download: ");
@@ -99,7 +102,6 @@ public class Progetto4 {
                         for (String s : checkMac.keySet()) {
                             System.out.println("Server [" + s + "] Integrità: " + checkMac.get(s));
                         }
-
                     }
                 } else {
                     System.out.println("\nNessun file sui server");
@@ -107,27 +109,26 @@ public class Progetto4 {
             } else if (choice == 5) {
                 System.out.println("Il reset provocherà la cancellazione di tutti i file e i server! proseguire? [y/n]");
                 String tmp = scanner.next();
-                if(tmp.matches("y")){
-                        String[] files = Utility.getPathFiles("Download");
-                Path currentRelativePath = Paths.get("src/progetto4");
-                String repo = currentRelativePath.toAbsolutePath().toString() + "/Repo/";
-                for (String s : files) {
-                    File f = new File(s);
-                    f.renameTo(new File(repo + Utility.nameFile(s)));
+                if (tmp.matches("y")) {
+                    String[] files = Utility.getPathFiles("Download");
+                    Path currentRelativePath = Paths.get("src/progetto4");
+                    String repo = currentRelativePath.toAbsolutePath().toString() + "/Repo/";
+                    for (String s : files) {
+                        File f = new File(s);
+                        f.renameTo(new File(repo + Utility.nameFile(s)));
+                    }
+                    String[] folders = Utility.getPathFiles("Servers");
+                    for (String s : folders) {
+                        File f = new File(s);
+                        Utility.removeDirectory(f);
+                    }
+                    enter = false;
                 }
-                String[] folders = Utility.getPathFiles("Servers");
-                for (String s : folders) {
-                    File f = new File(s);
-                    Utility.removeDirectory(f);
-                }
-                }
-
             } else {
                 client.SaveSession();
                 enter = false;
             }
         }
-
     }
 
     public static String fileChoice(String titolo, JFileChooser fileChooser) {

@@ -122,6 +122,9 @@ public class Progetto4 {
                         File f = new File(s);
                         Utility.removeDirectory(f);
                     }
+                   
+                    File clientToDelete=new File(Paths.get("src/progetto4/Clients").toString()+"/"+client.id);
+                    clientToDelete.delete();
                     enter = false;
                 }
             } else {

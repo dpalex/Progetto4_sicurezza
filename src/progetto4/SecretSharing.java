@@ -27,7 +27,7 @@ public class SecretSharing implements Serializable {
     private int modLength; // n bit del p 
     private BigInteger primeN;
     private int blocksize; //in byte 
-    private boolean debug = true;  //abilito stampe di debug 
+    private boolean debug = false;  //abilito stampe di debug 
 
     public SecretSharing(int k, int n, int blocksize) {
 

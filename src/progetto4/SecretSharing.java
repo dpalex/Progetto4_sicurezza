@@ -279,6 +279,12 @@ public class SecretSharing implements Serializable {
 
     }
     
-    
+    public int[] getInfo(){
+        int[] info=new int[3];
+        info[0]=this.k;
+        info[1]=this.n;
+        info[2]=this.blocksize;
+        return info;
+    }
 
 }

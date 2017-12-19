@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.zip.DataFormatException;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
@@ -36,25 +37,25 @@ public class Client implements Serializable {
 
     private HashMap<String, HashMap<BigInteger, String>> nameMapping = new HashMap<String, HashMap<BigInteger, String>>();
     private HashMap<String, HashMap<String, byte[]>> macMapping = new HashMap<String, HashMap<String, byte[]>>();
-    private String id;
+    public String id;
     private SecretSharing shamirScheme;
 
-    public Client(String id, boolean session) throws ClassNotFoundException, IOException {
-        if (!session) {
-            this.id = id;
-        } else {
+    public Client(String id) throws ClassNotFoundException, IOException { 
             Client tmp = Utility.loadSession(id);
+            if(tmp!=null){
             this.id = tmp.id;
             this.macMapping = tmp.macMapping;
             this.nameMapping = tmp.nameMapping;
             this.shamirScheme = tmp.shamirScheme;
+            }else{
+                this.id=id;
         }
     }
 
     public void setShamirScheme(int k, int n, int blockSize) {
         this.shamirScheme = new SecretSharing(k, n, blockSize);
     }
-
+    
     public void upload(String name) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         Path currentRelativePath = Paths.get("src/progetto4");
         String path = currentRelativePath.toAbsolutePath().toString() + "/Repo/";
@@ -164,14 +165,12 @@ public class Client implements Serializable {
         return fileMap;
     }
 
-    public String download(String name) throws IOException, FileNotFoundException, ClassNotFoundException, NoSuchAlgorithmException, InvalidKeyException {
+    public String download(String name) throws IOException, FileNotFoundException, ClassNotFoundException, NoSuchAlgorithmException, InvalidKeyException, DataFormatException {
         Map<BigInteger, ArrayList<byte[]>> fileMap = getAllParts(name);
         //utilizzo l'interpolazione in f0 in shamirScheme passandogli gli n-split associati al server
         //ritorno il contenuto del segreto
         Path currentRelativePath = Paths.get("src/progetto4");
         String download = currentRelativePath.toAbsolutePath().toString() + "/Download/";
-        System.out.println(fileMap.size());
-
         byte[] downloadFile = this.shamirScheme.getSecret(fileMap);
         String result = Boolean.toString(this.checkFinalIntegrity(name, downloadFile));
         Utility.writeFile(download + name, downloadFile);
@@ -186,24 +185,16 @@ public class Client implements Serializable {
         return tmp;
     }
 
-    public ArrayList<String> getServerOnline(String nameFile) {
-        ArrayList<String> servers = new ArrayList<String>();
-        for (Map.Entry<BigInteger, String> s : this.nameMapping.get(nameFile).entrySet()) {
-            servers.add(s.getKey().toString());
-        }
-        return servers;
-    }
-
     public HashMap<String, String> getStates(String nameFile) throws IOException, FileNotFoundException, ClassNotFoundException, NoSuchAlgorithmException, InvalidKeyException {
-
         return this.checkAllIntegrity(nameFile);
     }
 
     public void SaveSession() throws IOException, FileNotFoundException, ClassNotFoundException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-        for (Map.Entry<String, HashMap<BigInteger, String>> s : this.nameMapping.entrySet()) {
-            this.checkAllIntegrity(s.getKey());
-        }
         Utility.saveSession(this, this.id);
+    }
+    
+    public int[] getInfoScheme(){
+        return this.shamirScheme.getInfo();
     }
 
 }

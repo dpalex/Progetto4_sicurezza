@@ -308,10 +308,14 @@ public class Utility implements Serializable {
     public static Client loadSession(String id) throws ClassNotFoundException, IOException {
         Path currentRelativePath = Paths.get("src/progetto4");
         String clients = currentRelativePath.toAbsolutePath().toString() + "/Clients/";
-        ByteArrayInputStream bis = new ByteArrayInputStream(loadFile(clients + id));
-        ObjectInput in = null;
-        in = new ObjectInputStream(bis);
-        Client tmp = (Client) in.readObject();
+        File tmpfile = new File( clients.toString() + "/" + id);
+        Client tmp=null;
+            if (tmpfile.exists()) {
+            ByteArrayInputStream bis = new ByteArrayInputStream(loadFile(clients + id));
+            ObjectInput in = null;
+            in = new ObjectInputStream(bis);
+            tmp = (Client) in.readObject();
+            }
         return tmp;
 
     }

@@ -8,52 +8,57 @@ package progetto4;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.zip.DataFormatException;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
-/**
- *
- * @author gia
- */
 public class Progetto4 {
 
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws IOException, NoSuchAlgorithmException, InvalidKeyException, FileNotFoundException, ClassNotFoundException, InvalidKeySpecException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
+    public static void main(String[] args) throws IOException, NoSuchAlgorithmException, InvalidKeyException, FileNotFoundException, ClassNotFoundException, InvalidKeySpecException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, DataFormatException {
 
-        menu("giovanni", false);
+        menu();
 
     }
 
-    public static void menu(String id, boolean session) throws IOException, NoSuchAlgorithmException, InvalidKeyException, FileNotFoundException, ClassNotFoundException, InvalidKeySpecException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
-        Client client = new Client(id, session);
-        if (!session) {
-            client.setShamirScheme(3, 7, 256);
-        }
+    public static void menu() throws IOException, NoSuchAlgorithmException, InvalidKeyException, FileNotFoundException, ClassNotFoundException, InvalidKeySpecException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, DataFormatException {
         Scanner scanner = new Scanner(System.in);
+        System.out.println("Inserisci id utente: ");
+        String id = scanner.next();
+        Client client = new Client(id);
+
+        if (Utility.loadSession(id) != null) {
+            System.out.println("Caricata sessione precedente dell'utente: " + client.id + ". Schema utilizzato: k=" + client.getInfoScheme()[0] + " n=" + client.getInfoScheme()[1] + " dim block=" + client.getInfoScheme()[2]);
+        } else {
+            System.out.print("\nNuovo utente: " + id + " ShamirScheme:\nK: ");
+            int k = scanner.nextInt();
+            System.out.print("N: ");
+            int n = scanner.nextInt();
+            System.out.print("Dim blocchi (in byte): ");
+            int dim = scanner.nextInt();
+            client.setShamirScheme(k, n, dim);
+        }
         boolean enter = true;
         while (enter) {
-            System.out.print("\nSharing-Service: \n[1]Upload file\n[2]Download file\n[3]Visualizza file presenti sul server\n[4]Visualizza integrità file\n[5]Refresh directory\n[6]Salva sessione\n[any]Esci\n\nScelta: ");
+            System.out.print("\nSharing-Service: \n[1]Upload file\n[2]Download file\n[3]Visualizza file presenti sul server\n[4]Visualizza integrità file\n[5]RESET ALL\n[any]Esci e salva sessione\n\nScelta: ");
             int choice = scanner.nextInt();
             if (choice == 1) {
                 JFileChooser fileChooser = new JFileChooser();
                 client.upload(Utility.nameFile(fileChoice("File disponibili per l'upload: ", fileChooser)));
                 System.out.println("\nEffettuato upload sui server");
             } else if (choice == 2) {
-
                 if (client.getNameFilesOnline().size() != 0) {
                     System.out.println("\nFile presenti sui server per il download: ");
                     for (int i = 0; i < client.getNameFilesOnline().size(); i++) {
@@ -62,15 +67,15 @@ public class Progetto4 {
                     System.out.print("\nScelta: ");
                     int scelta = scanner.nextInt();
                     String nameFile = client.getNameFilesOnline().get(scelta);
-                    System.out.println("\nServer online per il file [ " + nameFile + " ] :");
-
-                    ArrayList<String> servers = client.getServerOnline(client.getNameFilesOnline().get(scelta));
-
+                    System.out.println("\nServer online per il file [ " + nameFile + " ]:\n");
+                    HashMap<String, String> checkMac = client.getStates(nameFile);
+                    for (String s : checkMac.keySet()) {
+                        System.out.println("Server [" + s + "] Integrità: " + checkMac.get(s));
+                    }
                     System.out.println("\nDownload in corso...");
                     String result = client.download(client.getNameFilesOnline().get(scelta));
                     System.out.println("Verifica Mac del file: " + result);
                     System.out.println("\nFile salvato nella directory Download");
-
                 } else {
                     System.out.println("\nNessun file sui server per il download! ");
                 }
@@ -80,7 +85,6 @@ public class Progetto4 {
                     System.out.println("\nFile presenti sui server per il download: ");
                     for (int i = 0; i < client.getNameFilesOnline().size(); i++) {
                         System.out.println(client.getNameFilesOnline().get(i));
-
                     }
                 } else {
                     System.out.println("\nNessun file sui server per il download! ");
@@ -101,7 +105,10 @@ public class Progetto4 {
                     System.out.println("\nNessun file sui server");
                 }
             } else if (choice == 5) {
-                String[] files = Utility.getPathFiles("Download");
+                System.out.println("Il reset provocherà la cancellazione di tutti i file e i server! proseguire? [y/n]");
+                String tmp = scanner.next();
+                if(tmp.matches("y")){
+                        String[] files = Utility.getPathFiles("Download");
                 Path currentRelativePath = Paths.get("src/progetto4");
                 String repo = currentRelativePath.toAbsolutePath().toString() + "/Repo/";
                 for (String s : files) {
@@ -113,24 +120,10 @@ public class Progetto4 {
                     File f = new File(s);
                     Utility.removeDirectory(f);
                 }
-                //client.SaveSession();
+                }
 
-            } else if (choice == 6) {
-                client.SaveSession();
-                enter = false;
             } else {
-                String[] files = Utility.getPathFiles("Download");
-                Path currentRelativePath = Paths.get("src/progetto4");
-                String repo = currentRelativePath.toAbsolutePath().toString() + "/Repo/";
-                for (String s : files) {
-                    File f = new File(s);
-                    f.renameTo(new File(repo + Utility.nameFile(s)));
-                }
-                String[] folders = Utility.getPathFiles("Servers");
-                for (String s : folders) {
-                    File f = new File(s);
-                    Utility.removeDirectory(f);
-                }
+                client.SaveSession();
                 enter = false;
             }
         }

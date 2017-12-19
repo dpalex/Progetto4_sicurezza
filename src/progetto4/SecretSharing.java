@@ -287,16 +287,5 @@ public class SecretSharing implements Serializable {
         info[2]=this.blocksize;
         return info;
     }
-  
-
-    public BigInteger getPrime(){
-        
-        return this.primeN;
-    }
-    
-    public void setPrime(BigInteger prime){
-        
-        this.primeN = prime;
-    }
 
 }

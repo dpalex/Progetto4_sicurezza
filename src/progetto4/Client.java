@@ -211,16 +211,10 @@ public class Client implements Serializable {
     public void SaveSession() throws IOException, FileNotFoundException, ClassNotFoundException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         Utility.saveSession(this, this.id);
     }
-<<<<<<< HEAD
-    
-    public int[] getInfoScheme(){
-        return this.shamirScheme.getParameters();
-=======
 
     /*Metodo pubblico che ritorna informazioni base sullo schema: n,k,dim blocco*/
-    public int[] getInfoScheme() {
-        return this.shamirScheme.getInfo();
->>>>>>> 6028d3b3e24340f08bd29398d443737255c38373
+    public int[] getInfoScheme(){
+        return this.shamirScheme.getParameters();
     }
 
 }

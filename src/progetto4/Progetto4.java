@@ -107,7 +107,7 @@ public class Progetto4 {
                     System.out.println("\nNessun file sui server");
                 }
             } else if (choice == 5) {
-                System.out.println("Il reset provocherà la cancellazione di tutti i file e i server! proseguire? [y/n]");
+                System.out.println("Il reset provocherà la cancellazione di tutti i file, i server e la sessione utente! proseguire? [y/n]");
                 String tmp = scanner.next();
                 if (tmp.matches("y")) {
                     String[] files = Utility.getPathFiles("Download");

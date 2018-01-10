@@ -18,6 +18,10 @@ import javax.crypto.NoSuchPaddingException;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
+/**
+ *
+ * @author gruppo13
+ */
 public class Progetto4 {
 
     public static void main(String[] args) throws IOException, NoSuchAlgorithmException, InvalidKeyException, FileNotFoundException, ClassNotFoundException, InvalidKeySpecException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, DataFormatException {
@@ -29,7 +33,7 @@ public class Progetto4 {
     Metodo che presenta un menu per i servizi proposti, il menu permette di:
     -Istanziare un client:
         In caso questo esista già, viene caricata la sua ultima sessione
-        Se non è presente il client, viene chiesto di istanziare uno schema di shamir scegliendo i parametri
+        Se non è presente il client, viene chiesto di istanziare uno schema di shamir settando i parametri n, k, dim
     -Effettuare un upload
     -Effettuare un download
     -Visualizzare i file per cui si è già effetuato upload su server
@@ -72,7 +76,7 @@ public class Progetto4 {
                     int scelta = scanner.nextInt();
                     String nameFile = client.getNameFilesOnline().get(scelta);
                     System.out.println("\nServer online per il file [ " + nameFile + " ]:\n");
-                    HashMap<String, String> checkMac = client.getStates(nameFile);
+                    HashMap<String, String> checkMac = client.checkIntegrity(nameFile);
                     for (String s : checkMac.keySet()) {
                         System.out.println("Server [" + s + "] Integrità: " + checkMac.get(s));
                     }
@@ -98,7 +102,7 @@ public class Progetto4 {
                     for (int i = 0; i < client.getNameFilesOnline().size(); i++) {
                         String name = client.getNameFilesOnline().get(i);
                         System.out.println("\nNome file: " + name + "   Lista Server Online: ");
-                        HashMap<String, String> checkMac = client.getStates(name);
+                        HashMap<String, String> checkMac = client.checkIntegrity(name);
                         for (String s : checkMac.keySet()) {
                             System.out.println("Server [" + s + "] Integrità: " + checkMac.get(s));
                         }

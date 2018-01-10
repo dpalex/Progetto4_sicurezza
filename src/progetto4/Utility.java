@@ -50,7 +50,7 @@ import javax.crypto.SecretKey;
 
 /**
  *
- * @author dp.alex
+ * @author gruppo13
  */
 public class Utility implements Serializable {
 

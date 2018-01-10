@@ -24,6 +24,10 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import progetto4.SecretSharing;
 
+/**
+ *
+ * @author gruppo13
+ */
 public class Client implements Serializable {
 
     private HashMap<String, HashMap<BigInteger, String>> nameMapping = new HashMap<String, HashMap<BigInteger, String>>();
@@ -68,7 +72,7 @@ public class Client implements Serializable {
         //ottengo gli n-simi split ricevuti secondo lo schema di shamir
         Map<BigInteger, ArrayList<byte[]>> shares = this.shamirScheme.split(file);
         //applico Mac a tutti gli split e al file intero
-        applyMac(name, file, shares);
+        this.applyMac(name, file, shares);
         //distribuisco gli split sugli n-server
         this.distribuite(name, shares);
         File f = new File(path.toString() + name);
@@ -172,12 +176,24 @@ public class Client implements Serializable {
         //restituisco gli split
         return fileMap;
     }
+    
+    /*Metodo che ricevuta una map rappresentante gli share sui server restituisce una Map dello stesso tipo contente solo gli share non corrotti e integri*/
+    private Map<BigInteger, ArrayList<byte[]>> toGetSecret(String name,Map<BigInteger, ArrayList<byte[]>> shares) throws NoSuchAlgorithmException, InvalidKeyException, IOException, FileNotFoundException, ClassNotFoundException{
+                HashMap<String, String> results=this.checkAllIntegrity(name);
+                Map<BigInteger, ArrayList<byte[]>> tmp= new HashMap<BigInteger, ArrayList<byte[]>>();
+                for(BigInteger bg:shares.keySet()){
+                    if(Boolean.valueOf(results.get(bg.toString()))){
+                        tmp.put(bg, shares.get(bg));
+                    }
+                }
+                return tmp;
+            }
 
     /*Metodo pubblico che, data una stringa rappresentante il nome del file, effettua il download di questultimo, 
     ritorna una stringa rappresentante l'esito dell'integrità del file*/
     public String download(String name) throws IOException, FileNotFoundException, ClassNotFoundException, NoSuchAlgorithmException, InvalidKeyException, DataFormatException {
         //prendo le parti presenti sui server e le inserisco nella mappa
-        Map<BigInteger, ArrayList<byte[]>> fileMap = getAllParts(name);
+        Map<BigInteger, ArrayList<byte[]>> fileMap = toGetSecret(name,getAllParts(name));
         Path currentRelativePath = Paths.get("src/progetto4");
         String download = currentRelativePath.toAbsolutePath().toString() + "/Download/";
         //ricevo l'intero segreto utilizzando la ricostruzione e l'interpolazione in shamir
@@ -203,7 +219,7 @@ public class Client implements Serializable {
     }
 
     /*Metodo pubblico che restituisce una mappa contente nomeserver-integrità dello share n-esimo*/
-    public HashMap<String, String> getStates(String nameFile) throws IOException, FileNotFoundException, ClassNotFoundException, NoSuchAlgorithmException, InvalidKeyException {
+    public HashMap<String, String> checkIntegrity(String nameFile) throws IOException, FileNotFoundException, ClassNotFoundException, NoSuchAlgorithmException, InvalidKeyException {
         return this.checkAllIntegrity(nameFile);
     }
 
@@ -215,6 +231,6 @@ public class Client implements Serializable {
     /*Metodo pubblico che ritorna informazioni base sullo schema: n,k,dim blocco*/
     public int[] getInfoScheme(){
         return this.shamirScheme.getParameters();
-    }
+}
 
 }

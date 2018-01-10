@@ -1,6 +1,5 @@
 package progetto4;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import static java.lang.System.out;
@@ -13,11 +12,10 @@ import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
 import java.util.zip.DataFormatException;
-import java.util.zip.GZIPOutputStream;
 
 /**
  *
- * @author f.did
+ * @author gruppo13
  */
 public class SecretSharing implements Serializable {
 
@@ -256,29 +254,11 @@ public class SecretSharing implements Serializable {
         return r;
     }
 
-    private BigInteger computeBlock(ArrayList<BigInteger> numList, ArrayList<BigInteger> denList) {
-
-        BigInteger lcm = Utility.lcm(denList);
-        BigInteger n;
-        BigInteger d;
-        BigInteger result = BigInteger.ZERO;
-        for (int i = 0; i < numList.size(); i++) {
-            n = numList.get(i);
-            d = denList.get(i);
-            result = (result.add(n.multiply(lcm.divide(d)))).mod(this.primeN);
-
-        }
-
-        return (result.divide(lcm)).mod(this.primeN);
-
-    }
-
     private BigInteger mInv(BigInteger a) {
 
         return a.modInverse(this.primeN);
 
     }
-
 
     public int[] getParameters(){
         int[] info=new int[3];
